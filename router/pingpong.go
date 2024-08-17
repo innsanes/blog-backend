@@ -1,9 +1,16 @@
 package router
 
-import "github.com/gin-gonic/gin"
+import (
+	"blog-backend/global"
+	"github.com/gin-gonic/gin"
+)
 
-func RegisterPingPong(engine *gin.Engine) {
-	engine.GET("/ping", func(c *gin.Context) {
+func init() {
+	global.Gin.RegisterRouter(RegisterPingPong)
+}
+
+func RegisterPingPong(group *gin.RouterGroup) {
+	group.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})

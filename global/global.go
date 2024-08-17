@@ -2,17 +2,14 @@ package global
 
 import (
 	"blog-backend/core"
-	"blog-backend/library/ginx"
-	"github.com/innsanes/conf"
+	"blog-backend/library/martini"
 )
 
 var (
 	Log    = core.NewLog()
-	Config = core.NewConfig(
-		conf.WithResultLogger(Log),
-	)
-	Gin = core.NewGin(
+	Config = core.NewConfig()
+	Gin    = core.NewMartini(
 		Config,
-		ginx.WithLogger(ginx.DefaultLogger(Log)),
+		martini.WithLogHandler(core.MartiniLogger(Log)),
 	)
 )

@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/gin-gonic/gin v1.10.0
-	github.com/innsanes/conf v0.0.0-20240813123455-afaf27101620
+	github.com/innsanes/conf v0.0.0-20240816091116-687d4061a962
 	github.com/innsanes/serv v0.0.0-20240810060752-f3b5b43e32e5
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/zap v1.27.0

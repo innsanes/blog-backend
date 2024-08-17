@@ -1,18 +1,19 @@
-package ginx
+package martini
 
 import (
 	"github.com/gin-gonic/gin"
 	"time"
 )
 
-type Gin struct {
+type M struct {
 	*gin.Engine
 	logger gin.HandlerFunc
 }
 
-func New(bfs ...BuildFunc) *Gin {
-	ret := &Gin{
+func New(bfs ...BuildFunc) *M {
+	ret := &M{
 		Engine: gin.New(),
+		logger: gin.Logger(),
 	}
 	for _, bf := range bfs {
 		bf(ret)
@@ -20,23 +21,21 @@ func New(bfs ...BuildFunc) *Gin {
 	return ret
 }
 
-type BuildFunc func(*Gin)
+type BuildFunc func(*M)
 
-func WithLogger(logger gin.HandlerFunc) BuildFunc {
-	return func(s *Gin) {
-		s.logger = logger
+func WithLogHandler(logger LogHandler) BuildFunc {
+	return func(s *M) {
+		s.logger = defaultLogger(logger)
 	}
 }
 
-func (g *Gin) GetLogger() gin.HandlerFunc {
+type LogHandler func(param gin.LogFormatterParams)
+
+func (g *M) Logger() gin.HandlerFunc {
 	return g.logger
 }
 
-type Logger interface {
-	Info(format string, v ...interface{})
-}
-
-func DefaultLogger(logger Logger) gin.HandlerFunc {
+func defaultLogger(logger LogHandler) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Start timer
 		start := time.Now()
@@ -64,15 +63,6 @@ func DefaultLogger(logger Logger) gin.HandlerFunc {
 			path = path + "?" + raw
 		}
 		param.Path = path
-
-		logger.Info("[FORMATTER TEST] %v | %3d | %13v | %15s | %-7s %#v\n%s",
-			param.TimeStamp.Format("2006/01/02 - 15:04:05"),
-			param.StatusCode,
-			param.Latency,
-			param.ClientIP,
-			param.Method,
-			param.Path,
-			param.ErrorMessage,
-		)
+		logger(param)
 	}
 }

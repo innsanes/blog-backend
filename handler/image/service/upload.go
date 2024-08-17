@@ -49,7 +49,9 @@ func Upload(ctx *gin.Context) {
 	fileSuffix := filepath.Ext(params.File.Filename)
 
 	// 保存文件到本地
-	dst, err := os.Create("./image/" + hashValue + fileSuffix)
+	filename := hashValue + fileSuffix
+	dst, err := os.Create(filepath.Join(config.Path, filename))
+
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, "保存文件失败")
 		return

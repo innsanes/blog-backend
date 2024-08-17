@@ -5,18 +5,18 @@ import (
 	"github.com/innsanes/serv"
 )
 
-type Config struct {
+type Conf struct {
 	*serv.Service
 	*conf.X
 }
 
-func NewConfig(bfs ...conf.BuildFunc) *Config {
-	return &Config{
+func NewConfig(bfs ...conf.BuildFunc) *Conf {
+	return &Conf{
 		X: conf.New(bfs...),
 	}
 }
 
-func (s *Config) BeforeServe() (err error) {
+func (s *Conf) BeforeServe() (err error) {
 	flag := conf.NewFlag(s.X)
 	s.X.RegisterSource(flag)
 	yaml := conf.NewYaml(s.X)
@@ -25,12 +25,12 @@ func (s *Config) BeforeServe() (err error) {
 	return
 }
 
-func (s *Config) Serve() (err error) {
+func (s *Conf) Serve() (err error) {
 	s.X.Parse()
 	return
 }
 
-func (s *Config) AfterServe() (err error) {
+func (s *Conf) AfterServe() (err error) {
 	s.X.PrintResult()
 	return
 }

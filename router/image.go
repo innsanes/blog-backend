@@ -1,17 +1,18 @@
 package router
 
 import (
+	"blog-backend/global"
 	"blog-backend/handler/image/service"
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterImage(engine *gin.Engine) {
-	group := engine.Group("/image")
+func init() {
+	global.Gin.RegisterRouter(RegisterImage)
+}
 
-	//group.GET("", func(c *gin.Context) {
-	//	c.JSON(200, gin.H{
-	//		"message": "image",
-	//	})
-	//})
-	group.POST("upload", service.Upload)
+func RegisterImage(group *gin.RouterGroup) {
+	imageGroup := group.Group("/image")
+
+	imageGroup.GET(":name", service.Get)
+	imageGroup.POST("upload", service.Upload)
 }
