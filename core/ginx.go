@@ -18,8 +18,8 @@ type Martini struct {
 }
 
 type GinConfig struct {
-	IP   string `conf:"ip,default=0.0.0.0"`
-	Port int    `conf:"port,default=8000"`
+	IP   string `conf:"ip,default=0.0.0.0,usage=gin_serve_ip"`
+	Port int    `conf:"port,default=8000,usage=gin_serve_port"`
 }
 
 func NewMartini(conf Confer, bfs ...martini.BuildFunc) *Martini {

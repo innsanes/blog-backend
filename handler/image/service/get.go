@@ -10,7 +10,7 @@ import (
 )
 
 type Config struct {
-	Path string `conf:"config,default=./image"`
+	Path string `conf:"config,default=./image,usage=image_file_save_path"`
 }
 
 var config Config
