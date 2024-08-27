@@ -12,4 +12,5 @@ var (
 		Config,
 		martini.WithLogHandler(core.MartiniLogger(Log)),
 	)
+	MySQL = core.NewMOrm(Config)
 )

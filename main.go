@@ -12,5 +12,6 @@ func main() {
 		global.Log,
 		global.Config,
 		global.Gin,
+		global.MySQL,
 	)
 }
