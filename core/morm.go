@@ -2,6 +2,7 @@ package core
 
 import (
 	"blog-backend/library/oorm"
+	"blog-backend/model/mymodel"
 	"github.com/innsanes/serv"
 )
 
@@ -28,6 +29,10 @@ func (s *MOrm) BeforeServe() (err error) {
 func (s *MOrm) Serve() (err error) {
 	s.OOrm = oorm.New(s.config)
 	err = s.Open()
+	if err != nil {
+		return
+	}
+	err = s.AutoMigrate(mymodel.BuildList...)
 	if err != nil {
 		return
 	}
