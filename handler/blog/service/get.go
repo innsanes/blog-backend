@@ -4,6 +4,7 @@ import (
 	"blog-backend/handler/blog/dao"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type RequestGet struct {
@@ -16,12 +17,17 @@ type ResponseGet struct {
 }
 
 func Get(ctx *gin.Context) {
-	params := &RequestGet{}
-	if err := ctx.ShouldBind(params); err != nil {
+	params := ctx.Param("id")
+	if params == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
+		return
+	}
+	id, err := strconv.ParseInt(params, 10, 64)
+	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	blog, err := dao.Get(params.Id)
+	blog, err := dao.Get(uint(id))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
