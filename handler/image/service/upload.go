@@ -63,5 +63,5 @@ func Upload(ctx *gin.Context) {
 		ctx.String(http.StatusInternalServerError, "保存文件失败")
 		return
 	}
-	ctx.String(http.StatusOK, "上传成功")
+	ctx.JSON(http.StatusOK, gin.H{"url": filename})
 }
