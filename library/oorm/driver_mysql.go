@@ -16,6 +16,6 @@ type MySQLConfig struct {
 }
 
 func (c *MySQLConfig) Open() gorm.Dialector {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s", c.User, c.Pass, c.Host, c.Port, c.DBName, c.Charset)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local", c.User, c.Pass, c.Host, c.Port, c.DBName, c.Charset)
 	return mysql.Open(dsn)
 }
