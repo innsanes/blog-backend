@@ -5,7 +5,9 @@ import (
 	"blog-backend/handler/user/dao"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"math/rand"
 	"net/http"
+	"strconv"
 )
 
 type RequestLogin struct {
@@ -41,13 +43,14 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
-	token, err := MakeSession(up.UserID)
+	token, err := MakeSession()
 	if err != nil {
 		global.Log.Error("MakeSession error: ", err)
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
+	global.Token.AddToken(token)
 	ctx.JSON(http.StatusOK, gin.H{"token": token})
 	return
 }
@@ -61,6 +64,6 @@ func ComparePassword(password string, hash string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 }
 
-func MakeSession(id uint) (string, error) {
-	return "10000", nil
+func MakeSession() (string, error) {
+	return "t" + strconv.FormatInt(rand.Int63(), 10), nil
 }

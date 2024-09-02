@@ -13,4 +13,5 @@ var (
 		martini.WithLogHandler(core.MartiniLogger(Log)),
 	)
 	MySQL = core.NewMOrm(Config)
+	Token = core.NewTokenPool()
 )

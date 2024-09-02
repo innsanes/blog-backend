@@ -13,7 +13,8 @@ type User struct {
 }
 
 type UserPassword struct {
-	UserID   uint   `gorm:"column:user_id;primaryKey"`
+	gorm.Model
+	UserID   uint   `gorm:"column:user_id;unique"`
 	UserName string `gorm:"column:user_name;primaryKey;type:VARCHAR(15)"`
-	Password string `gorm:"column:password;notnull;type:VARCHAR(20)"`
+	Password string `gorm:"column:password;notnull;type:VARCHAR(100)"`
 }

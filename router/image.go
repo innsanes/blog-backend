@@ -3,6 +3,7 @@ package router
 import (
 	"blog-backend/global"
 	"blog-backend/handler/image/service"
+	"blog-backend/handler/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,5 +15,5 @@ func RegisterImage(group *gin.RouterGroup) {
 	imageGroup := group.Group("/image")
 
 	imageGroup.GET(":name", service.Get)
-	imageGroup.POST("upload", service.Upload)
+	imageGroup.Use(middleware.TokenCheck()).POST("upload", service.Upload)
 }
