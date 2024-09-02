@@ -34,3 +34,30 @@ func Update(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 	return
 }
+
+type RequestUpdateDraft struct {
+	ID      uint   `json:"id" binding:"required"`
+	Name    string `json:"name" binding:"required"`
+	Content string `json:"content" binding:"required"`
+}
+
+func UpdateDraft(ctx *gin.Context) {
+	params := &RequestUpdateDraft{}
+	if err := ctx.ShouldBind(params); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err := dao.UpdateDraft(&mymodel.BlogDraft{
+		Model: gorm.Model{
+			ID: params.ID,
+		},
+		Name:    params.Name,
+		Content: params.Content,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.Status(http.StatusOK)
+	return
+}

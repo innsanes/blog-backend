@@ -4,6 +4,7 @@ import "gorm.io/gorm"
 
 func init() {
 	BuildList = append(BuildList, &User{})
+	BuildList = append(BuildList, &UserPassword{})
 }
 
 type User struct {
