@@ -12,8 +12,11 @@ type RequestGet struct {
 }
 
 type ResponseGet struct {
-	Name    string `json:"name"`
-	Content string `json:"content"`
+	Id         uint   `json:"id"`
+	Name       string `json:"name"`
+	Content    string `json:"content"`
+	CreateTime int64  `json:"createTime"`
+	UpdateTime int64  `json:"updateTime"`
 }
 
 func Get(ctx *gin.Context) {
@@ -33,8 +36,11 @@ func Get(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, &ResponseGet{
-		Name:    blog.Name,
-		Content: blog.Content,
+		Id:         blog.ID,
+		Name:       blog.Name,
+		Content:    blog.Content,
+		CreateTime: blog.CreatedAt.UnixMilli(),
+		UpdateTime: blog.UpdatedAt.UnixMilli(),
 	})
 	return
 }
@@ -45,8 +51,10 @@ type RequestList struct {
 type ResponseList []ResponseListItem
 
 type ResponseListItem struct {
-	Id   uint   `json:"id"`
-	Name string `json:"name"`
+	Id         uint   `json:"id"`
+	Name       string `json:"name"`
+	CreateTime int64  `json:"createTime"`
+	UpdateTime int64  `json:"updateTime"`
 }
 
 func List(ctx *gin.Context) {
@@ -63,8 +71,10 @@ func List(ctx *gin.Context) {
 	var res ResponseList
 	for _, blog := range blogs {
 		res = append(res, ResponseListItem{
-			Id:   blog.ID,
-			Name: blog.Name,
+			Id:         blog.ID,
+			Name:       blog.Name,
+			CreateTime: blog.CreatedAt.UnixMilli(),
+			UpdateTime: blog.UpdatedAt.UnixMilli(),
 		})
 	}
 	ctx.JSON(http.StatusOK, res)
