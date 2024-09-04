@@ -21,6 +21,6 @@ func Get(id uint) (t *mymodel.Blog, err error) {
 }
 
 func List() (t []mymodel.Blog, err error) {
-	err = global.MySQL.Model(&mymodel.Blog{}).Select("name", "id").Find(&t).Error
+	err = global.MySQL.Model(&mymodel.Blog{}).Omit("content").Find(&t).Error
 	return
 }
