@@ -45,7 +45,7 @@ func (s *Martini) Serve() (err error) {
 	s.Engine.Use(s.Logger(), gin.Recovery())
 
 	// Register router
-	routerGroup := s.Engine.Group("")
+	routerGroup := s.Engine.Group("/api")
 	for _, r := range s.router {
 		r(routerGroup)
 	}
