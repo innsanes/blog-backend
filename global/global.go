@@ -2,15 +2,15 @@ package global
 
 import (
 	"blog-backend/core"
-	"blog-backend/library/martini"
+	"blog-backend/library/vodka"
 )
 
 var (
-	Log    = core.NewLog()
-	Config = core.NewConfig()
-	Gin    = core.NewMartini(
+	Log        = core.NewLog()
+	Config     = core.NewConfig()
+	BlogServer = core.NewVodka(
 		Config,
-		martini.WithLogHandler(core.MartiniLogger(Log)),
+		vodka.WithLogHandler(core.VodkaLogger(Log)),
 	)
 	MySQL = core.NewMOrm(Config)
 	Token = core.NewTokenPool()

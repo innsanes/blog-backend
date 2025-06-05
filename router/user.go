@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	global.Gin.RegisterRouter(RegisterUser)
+	global.BlogServer.RegisterRouter(RegisterUser)
 }
 
 func RegisterUser(group *gin.RouterGroup) {

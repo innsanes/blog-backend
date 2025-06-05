@@ -22,6 +22,10 @@ func TestClient(t *testing.T) {
 		Content: "test3232",
 	})
 	assert.Nil(t, err)
+	http.DefaultClient.Post("http://localhost:8000/login", "application/json", bytes.NewBuffer(marshal))
+	http.DefaultClient.Post("http://localhost:8000/login", "application/json", bytes.NewBuffer(marshal))
+	http.DefaultClient.Post("http://localhost:8000/login", "application/json", bytes.NewBuffer(marshal))
+	http.DefaultClient.Post("http://localhost:8000/login", "application/json", bytes.NewBuffer(marshal))
 	resp, err := http.DefaultClient.Post("http://localhost:8000/blog/create", "application/json", bytes.NewReader(marshal))
 	assert.Nil(t, err)
 	assert.Equal(t, 200, resp.StatusCode)

@@ -1,17 +1,17 @@
-package martini
+package vodka
 
 import (
 	"github.com/gin-gonic/gin"
 	"time"
 )
 
-type M struct {
+type Vodka struct {
 	*gin.Engine
 	logger gin.HandlerFunc
 }
 
-func New(bfs ...BuildFunc) *M {
-	ret := &M{
+func New(bfs ...BuildFunc) *Vodka {
+	ret := &Vodka{
 		Engine: gin.New(),
 		logger: gin.Logger(),
 	}
@@ -21,17 +21,17 @@ func New(bfs ...BuildFunc) *M {
 	return ret
 }
 
-type BuildFunc func(*M)
+type BuildFunc func(*Vodka)
 
 func WithLogHandler(logger LogHandler) BuildFunc {
-	return func(s *M) {
+	return func(s *Vodka) {
 		s.logger = defaultLogger(logger)
 	}
 }
 
 type LogHandler func(param gin.LogFormatterParams)
 
-func (g *M) Logger() gin.HandlerFunc {
+func (g *Vodka) Logger() gin.HandlerFunc {
 	return g.logger
 }
 

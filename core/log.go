@@ -31,7 +31,7 @@ func NewLog() *Logger {
 		EncodeTime:       zapcore.RFC3339TimeEncoder,
 		EncodeLevel:      zapcore.CapitalColorLevelEncoder,
 		EncodeDuration:   zapcore.SecondsDurationEncoder,
-		LineEnding:       "\n",
+		LineEnding:       "",
 		ConsoleSeparator: " ",
 	}
 

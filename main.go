@@ -11,7 +11,7 @@ func main() {
 	serv.Serve(
 		global.Log,
 		global.Config,
-		global.Gin,
+		global.BlogServer,
 		global.MySQL,
 	)
 }
