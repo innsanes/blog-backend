@@ -78,3 +78,8 @@ func (s *Logger) Debug(format string, v ...interface{}) {
 	s.Logger.Debug(fmt.Sprintf(format, v...))
 	return
 }
+
+func (s *Logger) Panic(format string, v ...interface{}) {
+	s.Logger.Panic(fmt.Sprintf(format, v...))
+	return
+}
