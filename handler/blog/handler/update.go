@@ -1,31 +1,33 @@
-package service
+package handler
 
 import (
 	"blog-backend/data/model"
-	"blog-backend/global"
 	"blog-backend/handler/blog/dao"
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 )
 
-type RequestCreate struct {
+type RequestUpdate struct {
+	ID      uint   `json:"id" binding:"required"`
 	Name    string `json:"name" binding:"required"`
 	Content string `json:"content" binding:"required"`
 }
 
-func Create(ctx *gin.Context) {
-	params := &RequestCreate{}
+func Update(ctx *gin.Context) {
+	params := &RequestUpdate{}
 	if err := ctx.ShouldBind(params); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := dao.Create(&model.Blog{
+	err := dao.Update(&model.Blog{
+		Model: gorm.Model{
+			ID: params.ID,
+		},
 		Name:    params.Name,
 		Content: params.Content,
 	})
 	if err != nil {
-		global.Log.Error(fmt.Sprintf("service.blog.create error: %v", err))
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

@@ -1,4 +1,4 @@
-package service
+package handler
 
 import (
 	"blog-backend/handler/blog/dao"

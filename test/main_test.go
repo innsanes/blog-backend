@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
-	"io"
 	"net/http"
 	"testing"
 )
@@ -23,17 +22,9 @@ func TestClient(t *testing.T) {
 	assert.Nil(t, err)
 	resp, err := http.DefaultClient.Post("http://localhost:8000/blog/create", "application/json", bytes.NewReader(marshal))
 	assert.Nil(t, err)
-	assert.Equal(t, 200, resp.StatusCode)
+	assert.Equal(t, 404, resp.StatusCode)
 
-	// 读取响应的body
-	body, err := io.ReadAll(resp.Body)
+	resp, err = http.DefaultClient.Post("http://localhost:8001/blog/create", "application/json", bytes.NewReader(marshal))
 	assert.Nil(t, err)
-	defer resp.Body.Close()
-
-	// 将body内容转换为字符串
-	bodyStr := string(body)
-
-	// 验证body内容是否正确
-	expectedBody := "{\"message\":\"pong\"}"
-	assert.Equal(t, expectedBody, bodyStr)
+	assert.Equal(t, 201, resp.StatusCode)
 }

@@ -15,6 +15,7 @@ type Vodka struct {
 	config *VodkaConfig
 	router []func(*gin.RouterGroup)
 	bfs    []vodka.BuildFunc
+	name   string
 }
 
 type VodkaConfig struct {
@@ -24,11 +25,12 @@ type VodkaConfig struct {
 	GinMode  string `conf:"mode,default=release,usage=gin_mode(debug/release/test)"`
 }
 
-func NewVodka(conf Confer, bfs ...vodka.BuildFunc) *Vodka {
+func NewVodka(conf Confer, name string, bfs ...vodka.BuildFunc) *Vodka {
 	return &Vodka{
 		conf:   conf,
 		config: &VodkaConfig{},
 		bfs:    bfs,
+		name:   name,
 	}
 }
 
@@ -37,7 +39,7 @@ func (s *Vodka) RegisterRouter(router func(*gin.RouterGroup)) {
 }
 
 func (s *Vodka) BeforeServe() (err error) {
-	s.conf.RegisterConfWithName("gin", s.config)
+	s.conf.RegisterConfWithName(s.name, s.config)
 	return
 }
 
