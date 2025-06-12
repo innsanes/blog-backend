@@ -1,26 +1,33 @@
 package dao
 
 import (
+	"blog-backend/data/model"
 	"blog-backend/global"
-	"blog-backend/model/mymodel"
+	"gorm.io/gorm"
 )
 
-func Create(m *mymodel.Blog) (err error) {
-	err = global.MySQL.Model(&mymodel.Blog{}).Create(m).Error
+func Create(m *model.Blog) (err error) {
+	err = global.MySQL.Model(&model.Blog{}).Create(m).Error
 	return
 }
 
-func Update(m *mymodel.Blog) (err error) {
-	err = global.MySQL.Model(&mymodel.Blog{}).Where("id = ?", m.ID).Updates(m).Error
+func Update(m *model.Blog) (err error) {
+	err = global.MySQL.Model(&model.Blog{}).Where("id = ?", m.ID).Updates(m).Error
 	return
 }
 
-func Get(id uint) (t *mymodel.Blog, err error) {
-	err = global.MySQL.Model(&mymodel.Blog{}).Where("id = ?", id).Find(&t).Error
+func Get(id uint) (t *model.Blog, err error) {
+	err = global.MySQL.Model(&model.Blog{}).Where("id = ?", id).Find(&t).Error
 	return
 }
 
-func List() (t []mymodel.Blog, err error) {
-	err = global.MySQL.Model(&mymodel.Blog{}).Omit("content").Find(&t).Error
+func List() (t []model.Blog, err error) {
+	err = global.MySQL.Model(&model.Blog{}).Omit("content").Find(&t).Error
+	return
+}
+
+func Delete(id uint) (err error) {
+	blog := model.Blog{Model: gorm.Model{ID: id}}
+	err = global.MySQL.Model(&model.Blog{}).Where("id = ?", id).Delete(&blog).Error
 	return
 }

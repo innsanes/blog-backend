@@ -16,12 +16,5 @@ func RegisterBlog(group *gin.RouterGroup) {
 	blogGroup.GET("/list", service.List)
 	blogGroup.POST("/create", service.Create)
 	blogGroup.PUT("/update", service.Update)
-	blogGroup.GET("/draft/:id", service.GetBlogDraft)
-
-	draftGroup := group.Group("/blog-draft")
-	draftGroup.GET(":id", service.GetDraft)
-	draftGroup.GET("/list", service.ListDraft)
-	draftGroup.POST("/create", service.CreateDraft)
-	draftGroup.POST("/create-blog", service.CreateBlogFromDraft)
-	draftGroup.PUT("/update", service.UpdateDraft)
+	blogGroup.DELETE("/delete", service.Delete)
 }

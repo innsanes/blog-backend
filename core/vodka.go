@@ -21,7 +21,7 @@ type VodkaConfig struct {
 	Addr     string `conf:"addr,default=0.0.0.0:8000,usage=gin_serve_ip"`
 	BasePath string `conf:"base_path,default=,usage=gin_serve_base_path"`
 	CORS     bool   `conf:"cors,default=false,usage=gin_serve_cors"`
-	GinMode  string `conf:"mode,default=release,usage=gin_mode(debug,release,test)"`
+	GinMode  string `conf:"mode,default=release,usage=gin_mode(debug/release/test)"`
 }
 
 func NewVodka(conf Confer, bfs ...vodka.BuildFunc) *Vodka {

@@ -2,19 +2,17 @@ package service
 
 import (
 	"blog-backend/data/model"
-	"blog-backend/global"
 	"blog-backend/handler/blog/dao"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-type RequestCreate struct {
+type RequestDelete struct {
 	Name    string `json:"name" binding:"required"`
 	Content string `json:"content" binding:"required"`
 }
 
-func Create(ctx *gin.Context) {
+func Delete(ctx *gin.Context) {
 	params := &RequestCreate{}
 	if err := ctx.ShouldBind(params); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -25,10 +23,9 @@ func Create(ctx *gin.Context) {
 		Content: params.Content,
 	})
 	if err != nil {
-		global.Log.Error(fmt.Sprintf("service.blog.create error: %v", err))
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.Status(http.StatusCreated)
+	ctx.Status(http.StatusNoContent)
 	return
 }

@@ -1,8 +1,8 @@
 package core
 
 import (
+	"blog-backend/data/model"
 	"blog-backend/library/oorm"
-	"blog-backend/model/mymodel"
 	"github.com/innsanes/serv"
 )
 
@@ -32,7 +32,7 @@ func (s *MOrm) Serve() (err error) {
 	if err != nil {
 		return
 	}
-	err = s.AutoMigrate(mymodel.BuildList...)
+	err = s.AutoMigrate(model.BuildList...)
 	if err != nil {
 		return
 	}

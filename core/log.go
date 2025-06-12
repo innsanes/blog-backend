@@ -40,7 +40,7 @@ func NewLog() *Logger {
 		os.Stdout,
 		zapcore.DebugLevel,
 	)
-	zapLogger := zap.New(zapCore, zap.AddCaller())
+	zapLogger := zap.New(zapCore, zap.AddCaller(), zap.AddCallerSkip(1))
 
 	return &Logger{
 		Logger: zapLogger,
@@ -60,7 +60,7 @@ func (s *Logger) Serve() (err error) {
 
 func (s *Logger) Info(format string, v ...interface{}) {
 	//s.Logger.Info(fmt.Sprintf(format, v...))
-	s.Logger.WithOptions(zap.AddCallerSkip(1)).Info(fmt.Sprintf(format, v...))
+	s.Logger.Info(fmt.Sprintf(format, v...))
 	return
 }
 

@@ -13,5 +13,4 @@ var (
 		vodka.WithLogHandler(core.VodkaLogger(Log)),
 	)
 	MySQL = core.NewMOrm(Config)
-	Token = core.NewTokenPool()
 )
