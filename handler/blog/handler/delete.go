@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"blog-backend/global"
 	"blog-backend/handler/blog/dao"
 	"net/http"
 
@@ -19,9 +20,9 @@ func Delete(ctx *gin.Context) {
 	}
 	err := dao.Delete(params.Id)
 	if err != nil {
+		global.Log.Error("handler.blog.delete error: %v", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.Status(http.StatusNoContent)
-	return
 }

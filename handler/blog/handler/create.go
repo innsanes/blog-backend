@@ -4,9 +4,9 @@ import (
 	"blog-backend/data/model"
 	"blog-backend/global"
 	"blog-backend/handler/blog/dao"
-	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type RequestCreate struct {
@@ -25,10 +25,9 @@ func Create(ctx *gin.Context) {
 		Content: params.Content,
 	})
 	if err != nil {
-		global.Log.Error(fmt.Sprintf("handler.blog.create error: %v", err))
+		global.Log.Error("handler.blog.create error: %v", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.Status(http.StatusCreated)
-	return
 }

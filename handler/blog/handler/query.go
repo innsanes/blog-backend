@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"blog-backend/global"
 	"blog-backend/handler/blog/dao"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 type RequestGet struct {
@@ -42,7 +44,6 @@ func Get(ctx *gin.Context) {
 		CreateTime: blog.CreatedAt.UnixMilli(),
 		UpdateTime: blog.UpdatedAt.UnixMilli(),
 	})
-	return
 }
 
 type RequestList struct {
@@ -65,6 +66,7 @@ func List(ctx *gin.Context) {
 	}
 	blogs, err := dao.List()
 	if err != nil {
+		global.Log.Error("handler.blog.list error: %v", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -78,5 +80,4 @@ func List(ctx *gin.Context) {
 		})
 	}
 	ctx.JSON(http.StatusOK, res)
-	return
 }
