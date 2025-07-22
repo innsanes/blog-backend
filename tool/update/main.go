@@ -10,44 +10,38 @@ import (
 	"os"
 )
 
-type CreateConf struct {
+type UpdateConf struct {
 	Host     string `conf:"host,default=localhost:8001,usage=server_url"`
 	Protocol string `conf:"protocol,default=http"`
-	Name     string `conf:"name,default=test,usage=blog_name"`
-	FilePath string `conf:"filepath,default=test.md,usage=file_path"`
+	Id       uint   `conf:"id,usage=blog_id"`
+	Name     string `conf:"name,usage=blog_name"`
+	FilePath string `conf:"filepath,usage=file_path"`
 }
 
 func main() {
 	log := core.NewLog()
 	config := core.NewConfig()
 	_ = config.BeforeServe()
-	c := &CreateConf{}
+	c := &UpdateConf{}
 	config.RegisterConfWithName("s", c)
 	_ = config.Serve()
 	_ = config.AfterServe()
-	url := c.Protocol + "://" + c.Host + "/blog/create"
-	filePath := c.FilePath
-
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		log.Panic("文件不存在: %s err:%v", filePath, err)
-	}
-
-	contentBytes, err := os.ReadFile(filePath)
+	url := c.Protocol + "://" + c.Host + "/blog/update"
+	contentBytes, err := os.ReadFile(c.FilePath)
 	if err != nil {
 		log.Panic("读取文件失败: %v", err)
 	}
-
-	payload := handler.RequestCreate{
+	payload := handler.RequestUpdate{
+		ID:      c.Id,
 		Name:    c.Name,
-		Content: string(contentBytes), // 将文件内容转换为字符串
+		Content: string(contentBytes),
 	}
-
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
 		log.Panic("JSON 序列化失败: %v", err)
 	}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		log.Panic("创建请求失败: %v", err)
 	}
