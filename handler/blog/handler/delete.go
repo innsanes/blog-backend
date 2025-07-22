@@ -1,27 +1,23 @@
 package handler
 
 import (
-	"blog-backend/data/model"
 	"blog-backend/handler/blog/dao"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type RequestDelete struct {
-	Name    string `json:"name" binding:"required"`
-	Content string `json:"content" binding:"required"`
+	Id uint `json:"id" binding:"required"`
 }
 
 func Delete(ctx *gin.Context) {
-	params := &RequestCreate{}
+	params := &RequestDelete{}
 	if err := ctx.ShouldBind(params); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := dao.Create(&model.Blog{
-		Name:    params.Name,
-		Content: params.Content,
-	})
+	err := dao.Delete(params.Id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
