@@ -2,7 +2,7 @@ package handler
 
 import (
 	"blog-backend/data/model"
-	"blog-backend/global"
+	g "blog-backend/global"
 	"blog-backend/handler/blog/dao"
 	"net/http"
 
@@ -30,7 +30,7 @@ func Update(ctx *gin.Context) {
 		Content: params.Content,
 	})
 	if err != nil {
-		global.Log.Error("handler.blog.update error: %v", err)
+		g.Log.Error("handler.blog.update error: %v", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

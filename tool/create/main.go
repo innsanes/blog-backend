@@ -5,6 +5,7 @@ import (
 	"blog-backend/handler/blog/handler"
 	"bytes"
 	"encoding/json"
+	"github.com/innsanes/conf"
 	"io"
 	"net/http"
 	"os"
@@ -22,7 +23,7 @@ func main() {
 	config := core.NewConfig()
 	_ = config.BeforeServe()
 	c := &CreateConf{}
-	config.RegisterConfWithName("s", c)
+	conf.RegisterConfWithName("s", c)
 	_ = config.Serve()
 	_ = config.AfterServe()
 	url := c.Protocol + "://" + c.Host + "/blog/create"

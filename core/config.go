@@ -7,30 +7,22 @@ import (
 
 type Conf struct {
 	*serv.Service
-	*conf.X
 }
 
-func NewConfig(bfs ...conf.BuildFunc) *Conf {
-	return &Conf{
-		X: conf.New(bfs...),
-	}
+func NewConfig() *Conf {
+	return &Conf{}
 }
 
 func (s *Conf) BeforeServe() (err error) {
-	flag := conf.NewFlag(s.X)
-	s.X.RegisterSource(flag)
-	yaml := conf.NewYaml(s.X)
-	s.X.RegisterSource(yaml)
-	s.X.RegisterConfWithName("yaml", yaml.YamlConf)
+	flag := conf.NewFlag(conf.GetConf())
+	conf.RegisterSource(flag)
+	yaml := conf.NewYaml(conf.GetConf())
+	conf.RegisterSource(yaml)
+	conf.RegisterConfWithName("yaml", yaml.YamlConf)
 	return
 }
 
 func (s *Conf) Serve() (err error) {
-	s.X.Parse()
-	return
-}
-
-func (s *Conf) AfterServe() (err error) {
-	s.X.PrintResult()
+	conf.Parse()
 	return
 }

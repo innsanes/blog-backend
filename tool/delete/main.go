@@ -5,6 +5,7 @@ import (
 	"blog-backend/handler/blog/handler"
 	"bytes"
 	"encoding/json"
+	"github.com/innsanes/conf"
 	"io"
 	"net/http"
 )
@@ -20,7 +21,7 @@ func main() {
 	config := core.NewConfig()
 	_ = config.BeforeServe()
 	c := &DeleteConf{}
-	config.RegisterConfWithName("s", c)
+	conf.RegisterConfWithName("s", c)
 	_ = config.Serve()
 	_ = config.AfterServe()
 	url := c.Protocol + "://" + c.Host + "/blog/delete"

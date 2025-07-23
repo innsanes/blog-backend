@@ -25,7 +25,7 @@ func Create(ctx *gin.Context) {
 		Content: params.Content,
 	})
 	if err != nil {
-		global.Log.Error("handler.blog.create error: %v", err)
+		g.Log.Error("handler.blog.create error: %v", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

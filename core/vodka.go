@@ -2,19 +2,19 @@ package core
 
 import (
 	"blog-backend/handler/middleware"
-	"blog-backend/library/vodka"
 	"fmt"
+
 	"github.com/gin-gonic/gin"
+	"github.com/innsanes/conf"
 	"github.com/innsanes/serv"
 )
 
 type Vodka struct {
 	*serv.Service
-	*vodka.Vodka
-	conf   Confer
+	Engine *gin.Engine
 	config *VodkaConfig
+	logger *VodkaLog
 	router []func(*gin.RouterGroup)
-	bfs    []vodka.BuildFunc
 	name   string
 }
 
@@ -25,11 +25,10 @@ type VodkaConfig struct {
 	GinMode  string `conf:"mode,default=release,usage=gin_mode(debug/release/test)"`
 }
 
-func NewVodka(conf Confer, name string, bfs ...vodka.BuildFunc) *Vodka {
+func NewVodka(name string) *Vodka {
 	return &Vodka{
-		conf:   conf,
 		config: &VodkaConfig{},
-		bfs:    bfs,
+		logger: NewVodkaLog(name),
 		name:   name,
 	}
 }
@@ -39,14 +38,14 @@ func (s *Vodka) RegisterRouter(router func(*gin.RouterGroup)) {
 }
 
 func (s *Vodka) BeforeServe() (err error) {
-	s.conf.RegisterConfWithName(s.name, s.config)
+	conf.RegisterConfWithName(s.name, s.config)
 	return
 }
 
 func (s *Vodka) Serve() (err error) {
 	gin.SetMode(s.config.GinMode)
-	s.Vodka = vodka.New(s.bfs...)
-	s.Engine.Use(s.Logger(), gin.Recovery())
+	s.Engine = gin.New()
+	s.Engine.Use(s.logger.Logger(), gin.Recovery())
 
 	if s.config.CORS {
 		s.Engine.Use(middleware.CORS())
@@ -64,17 +63,4 @@ func (s *Vodka) Serve() (err error) {
 		}
 	}()
 	return
-}
-
-func VodkaLogger(log *Logger) vodka.LogHandler {
-	return func(param gin.LogFormatterParams) {
-		log.Info("%s %s %s %d %s %s",
-			param.Method,
-			param.Path,
-			param.Request.Proto,
-			param.StatusCode,
-			param.Latency,
-			param.ErrorMessage,
-		)
-	}
 }
