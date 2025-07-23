@@ -5,6 +5,7 @@ import (
 	"blog-backend/service/blog/handler"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/innsanes/conf"
 	"io"
 	"net/http"
@@ -27,13 +28,12 @@ func main() {
 	conf.RegisterConfWithName("s", c)
 	_ = config.Serve()
 	_ = config.AfterServe()
-	url := c.Protocol + "://" + c.Host + "/blog/update"
+	url := fmt.Sprintf("%s://%s/blog/%d", c.Protocol, c.Host, c.Id)
 	contentBytes, err := os.ReadFile(c.FilePath)
 	if err != nil {
 		log.Panic("读取文件失败: %v", err)
 	}
 	payload := handler.RequestUpdate{
-		ID:      c.Id,
 		Name:    c.Name,
 		Content: string(contentBytes),
 	}
@@ -42,7 +42,7 @@ func main() {
 		log.Panic("JSON 序列化失败: %v", err)
 	}
 
-	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest(http.MethodPut, url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		log.Panic("创建请求失败: %v", err)
 	}

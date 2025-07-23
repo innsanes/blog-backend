@@ -22,8 +22,24 @@ func Get(id uint) (t *model.Blog, err error) {
 	return
 }
 
-func List() (t []model.Blog, err error) {
-	err = g.MySQL.Model(&model.Blog{}).Omit("content").Find(&t).Error
+func Count() (count int64, err error) {
+	err = g.MySQL.Model(&model.Blog{}).Count(&count).Error
+	return
+}
+
+func ListPage(page int, size int) (t []model.Blog, err error) {
+	offset := page * size
+	err = g.MySQL.Model(&model.Blog{}).Offset(offset).Limit(size).Omit("content").Find(&t).Error
+	return
+}
+
+func ListCursorForward(cursor uint, size int) (t []model.Blog, err error) {
+	err = g.MySQL.Model(&model.Blog{}).Where("id > ?", cursor).Order("id").Limit(size).Omit("content").Find(&t).Error
+	return
+}
+
+func ListCursorBackward(cursor uint, size int) (t []model.Blog, err error) {
+	err = g.MySQL.Model(&model.Blog{}).Where("id < ?", cursor).Order("id desc").Limit(size).Omit("content").Find(&t).Error
 	return
 }
 

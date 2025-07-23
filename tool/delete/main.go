@@ -2,9 +2,7 @@ package main
 
 import (
 	"blog-backend/core"
-	"blog-backend/service/blog/handler"
-	"bytes"
-	"encoding/json"
+	"fmt"
 	"github.com/innsanes/conf"
 	"io"
 	"net/http"
@@ -24,24 +22,12 @@ func main() {
 	conf.RegisterConfWithName("s", c)
 	_ = config.Serve()
 	_ = config.AfterServe()
-	url := c.Protocol + "://" + c.Host + "/blog/delete"
-	payload := handler.RequestDelete{
-		Id: c.Id,
-	}
-
-	jsonData, err := json.Marshal(payload)
-	if err != nil {
-		log.Panic("JSON 序列化失败: %v", err)
-	}
-
-	req, err := http.NewRequest("DELETE", url, bytes.NewBuffer(jsonData))
+	url := fmt.Sprintf("%s://%s/blog/%d", c.Protocol, c.Host, c.Id)
+	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
 		log.Panic("请求删除失败: %v", err)
 	}
-	req.Header.Set("Content-Type", "application/json") // 设置请求头
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Panic("请求删除失败: %v", err)
 	}
