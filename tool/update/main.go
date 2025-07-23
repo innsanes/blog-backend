@@ -2,7 +2,7 @@ package main
 
 import (
 	"blog-backend/core"
-	"blog-backend/handler/blog/handler"
+	"blog-backend/service/blog/handler"
 	"bytes"
 	"encoding/json"
 	"github.com/innsanes/conf"

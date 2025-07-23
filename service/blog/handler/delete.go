@@ -2,7 +2,7 @@ package handler
 
 import (
 	"blog-backend/global"
-	"blog-backend/handler/blog/dao"
+	"blog-backend/service/blog/dao"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

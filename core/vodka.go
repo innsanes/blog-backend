@@ -1,7 +1,7 @@
 package core
 
 import (
-	"blog-backend/handler/middleware"
+	"blog-backend/service/middleware"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
