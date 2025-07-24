@@ -12,6 +12,7 @@ func main() {
 	blogServer.RegisterRouter(router.RegisterBlog)
 	var internalServer = core.NewVodka("internal")
 	internalServer.RegisterRouter(router.RegisterBlogAuth)
+	internalServer.RegisterRouter(router.RegisterEcho)
 
 	serv.Serve(
 		g.Config,
