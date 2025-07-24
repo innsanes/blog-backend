@@ -1,19 +1,22 @@
 package main
 
 import (
+	"blog-backend/core"
 	"blog-backend/global"
 	"blog-backend/router"
 	"github.com/innsanes/serv"
 )
 
 func main() {
-	g.BlogServer.RegisterRouter(router.RegisterBlog)
-	g.InternalServer.RegisterRouter(router.RegisterBlogAuth)
+	var blogServer = core.NewVodka("blog")
+	blogServer.RegisterRouter(router.RegisterBlog)
+	var internalServer = core.NewVodka("internal")
+	internalServer.RegisterRouter(router.RegisterBlogAuth)
 
 	serv.Serve(
 		g.Config,
 		g.MySQL,
-		g.BlogServer,
-		g.InternalServer,
+		blogServer,
+		internalServer,
 	)
 }

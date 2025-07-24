@@ -5,9 +5,7 @@ import (
 )
 
 var (
-	Log            = core.NewLog()
-	Config         = core.NewConfig()
-	MySQL          = core.NewMOrm()
-	BlogServer     = core.NewVodka("blog")
-	InternalServer = core.NewVodka("internal")
+	Log    = core.NewLog()
+	Config = core.NewConfig()
+	MySQL  = core.NewMOrm()
 )
