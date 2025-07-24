@@ -2,7 +2,7 @@ package handler
 
 import (
 	"blog-backend/global"
-	"blog-backend/service/blog/dao"
+	"blog-backend/services/blog/dao"
 	"net/http"
 	"strconv"
 

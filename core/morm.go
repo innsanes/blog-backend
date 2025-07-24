@@ -1,7 +1,7 @@
 package core
 
 import (
-	"blog-backend/data/model"
+	"blog-backend/structs/model"
 	"fmt"
 	"gorm.io/gorm/logger"
 
@@ -42,7 +42,8 @@ func (s *MOrm) Serve() (err error) {
 		s.config.User, s.config.Pass, s.config.Host, s.config.Port, s.config.DBName, s.config.Charset)
 
 	s.DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: NewMOrmLogger(),
+		Logger:                                   NewMOrmLogger(),
+		DisableForeignKeyConstraintWhenMigrating: true,
 	})
 	if err != nil {
 		return err

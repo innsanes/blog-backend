@@ -1,20 +1,16 @@
 package handler
 
 import (
-	"blog-backend/data/model"
 	g "blog-backend/global"
-	"blog-backend/service/blog/dao"
+	"blog-backend/services/blog/dao"
+	"blog-backend/structs/model"
+	"blog-backend/structs/req"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
-
-type RequestUpdate struct {
-	Name    string `json:"name" binding:"required"`
-	Content string `json:"content" binding:"required"`
-}
 
 func Update(ctx *gin.Context) {
 	idString := ctx.Param("id")
@@ -23,7 +19,7 @@ func Update(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	params := &RequestUpdate{}
+	params := &req.BlogUpdate{}
 	if err = ctx.ShouldBind(params); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -34,7 +30,7 @@ func Update(ctx *gin.Context) {
 		},
 		Name:    params.Name,
 		Content: params.Content,
-	})
+	}, params.Tags)
 	if err != nil {
 		g.Log.Error("handler.blog.update error: %v", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

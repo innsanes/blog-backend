@@ -2,13 +2,14 @@ package main
 
 import (
 	"blog-backend/core"
-	"blog-backend/service/blog/handler"
+	"blog-backend/structs/req"
 	"bytes"
 	"encoding/json"
 	"github.com/innsanes/conf"
 	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type CreateConf struct {
@@ -16,6 +17,7 @@ type CreateConf struct {
 	Protocol string `conf:"protocol,default=http"`
 	Name     string `conf:"name,default=test,usage=blog_name"`
 	FilePath string `conf:"filepath,default=test.md,usage=file_path"`
+	Tags     string `conf:"tags,default=,usage=tags"`
 }
 
 func main() {
@@ -38,9 +40,10 @@ func main() {
 		log.Panic("读取文件失败: %v", err)
 	}
 
-	payload := handler.RequestCreate{
+	payload := req.BlogCreate{
 		Name:    c.Name,
 		Content: string(contentBytes), // 将文件内容转换为字符串
+		Tags:    strings.Split(c.Tags, ","),
 	}
 
 	jsonData, err := json.Marshal(payload)
@@ -48,14 +51,14 @@ func main() {
 		log.Panic("JSON 序列化失败: %v", err)
 	}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	r, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		log.Panic("创建请求失败: %v", err)
 	}
-	req.Header.Set("Content-Type", "application/json") // 设置请求头
+	r.Header.Set("Content-Type", "application/json") // 设置请求头
 
 	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := client.Do(r)
 	if err != nil {
 		log.Panic("发送请求失败: %v", err)
 	}
