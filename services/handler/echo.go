@@ -1,12 +1,12 @@
 package handler
 
 import (
-	g "blog-backend/global"
 	"blog-backend/services/service"
 	"blog-backend/structs/req"
 	"blog-backend/structs/resp"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Echo(ctx *gin.Context) {
@@ -16,7 +16,6 @@ func Echo(ctx *gin.Context) {
 	}
 	message, err := service.Echo.Echo(request)
 	if err != nil {
-		g.Log.Error("%s", err.Error())
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

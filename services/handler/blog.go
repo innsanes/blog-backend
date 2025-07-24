@@ -1,7 +1,6 @@
 package handler
 
 import (
-	g "blog-backend/global"
 	"blog-backend/services/service"
 	"blog-backend/structs/req"
 	"blog-backend/structs/tod"
@@ -19,7 +18,6 @@ func BlogCreate(ctx *gin.Context) {
 	}
 	err := service.Blog.Create(params)
 	if err != nil {
-		g.Log.Error("%s", err.Error())
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -44,7 +42,6 @@ func BlogUpdate(ctx *gin.Context) {
 	}
 	err = service.Blog.Update(request)
 	if err != nil {
-		g.Log.Error("handler.blog.update error: %v", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -63,7 +60,6 @@ func BlogGet(ctx *gin.Context) {
 	}
 	blog, err := service.Blog.Get(request)
 	if err != nil {
-		g.Log.Error("handler.blog.get error: %v", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -79,7 +75,6 @@ func BlogList(ctx *gin.Context) {
 	}
 	blogs, err := service.Blog.List(params)
 	if err != nil {
-		g.Log.Error("handler.blog.list error: %v", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -99,7 +94,6 @@ func BlogDelete(ctx *gin.Context) {
 	}
 	err = service.Blog.Delete(request)
 	if err != nil {
-		g.Log.Error("handler.blog.delete error: %v", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
