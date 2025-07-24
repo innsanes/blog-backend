@@ -1,20 +1,20 @@
 package router
 
 import (
-	"blog-backend/services/blog/handler"
+	"blog-backend/services/handler"
 
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterBlog(group *gin.RouterGroup) {
 	blogGroup := group.Group("/blog")
-	blogGroup.GET(":id", handler.Get)
-	blogGroup.GET("", handler.List)
+	blogGroup.GET(":id", handler.BlogGet)
+	blogGroup.GET("", handler.BlogList)
 }
 
 func RegisterBlogAuth(group *gin.RouterGroup) {
 	blogGroup := group.Group("/blog")
-	blogGroup.POST("", handler.Create)
-	blogGroup.PUT(":id", handler.Update)
-	blogGroup.DELETE(":id", handler.Delete)
+	blogGroup.POST("", handler.BlogCreate)
+	blogGroup.PUT(":id", handler.BlogUpdate)
+	blogGroup.DELETE(":id", handler.BlogDelete)
 }

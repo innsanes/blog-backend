@@ -7,14 +7,18 @@ type BlogCreate struct {
 }
 
 type BlogUpdate struct {
-	//Id      uint     `json:"id"`
+	Id uint
+	BlogUpdateBody
+}
+
+type BlogUpdateBody struct {
 	Name    string   `json:"name" binding:"required,min=1,max=30"`
 	Content string   `json:"content" binding:"required"`
 	Tags    []string `json:"tags" binding:"omitempty,max=10,dive,min=1,max=20"`
 }
 
 type BlogDelete struct {
-	//Id uint `json:"id"`
+	Id uint
 }
 
 type BlogGet struct {

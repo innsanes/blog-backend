@@ -35,5 +35,5 @@ func BlogList(in []*model.Blog) (out resp.BlogList) {
 }
 
 func TagString(in []*model.Tag) []string {
-	return to.SliceExtract(in, func(elem *model.Tag) string { return elem.Name })
+	return to.Slice(in, func(elem *model.Tag) string { return elem.Name })
 }

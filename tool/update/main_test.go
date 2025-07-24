@@ -27,7 +27,7 @@ func TestCreateFile(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	payload := req.BlogUpdate{
+	payload := req.BlogUpdateBody{
 		Name:    "test",
 		Content: "md213123", // 将文件内容转换为字符串
 		Tags:    []string{"tag2", "tag3", "tag4"},
