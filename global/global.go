@@ -1,4 +1,4 @@
-package g
+package global
 
 import (
 	"blog-backend/core"

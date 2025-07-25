@@ -13,10 +13,11 @@ func main() {
 	var internalServer = core.NewVodka("internal")
 	internalServer.RegisterRouter(router.RegisterBlogAuth)
 	internalServer.RegisterRouter(router.RegisterEcho)
+	internalServer.RegisterRouter(router.RegisterPrometheus)
 
 	serv.Serve(
-		g.Config,
-		g.MySQL,
+		global.Config,
+		global.MySQL,
 		blogServer,
 		internalServer,
 	)

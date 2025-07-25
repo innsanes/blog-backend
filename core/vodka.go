@@ -46,10 +46,10 @@ func (s *Vodka) Serve() (err error) {
 	gin.SetMode(s.config.GinMode)
 	s.Engine = gin.New()
 	s.Engine.Use(s.logger.Logger(), gin.Recovery())
-
 	if s.config.CORS {
 		s.Engine.Use(middleware.CORS())
 	}
+	s.Engine.Use(middleware.Prometheus())
 
 	routerGroup := s.Engine.Group(s.config.BasePath)
 	for _, r := range s.router {
