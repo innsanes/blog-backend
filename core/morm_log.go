@@ -25,7 +25,7 @@ func NewMOrmLogger() *MOrmLogger {
 		CallerKey:        "caller",
 		MessageKey:       "message",
 		StacktraceKey:    "stacktrace",
-		EncodeCaller:     LoggerCallerEncoder,
+		EncodeCaller:     ContainCallerEncoder,
 		EncodeTime:       zapcore.RFC3339TimeEncoder,
 		EncodeLevel:      zapcore.CapitalColorLevelEncoder,
 		EncodeDuration:   zapcore.SecondsDurationEncoder,

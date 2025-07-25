@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -75,21 +76,41 @@ func init() {
 }
 
 func LoggerCallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(LoggerCallerEncoderTrimmedPath(caller))
+	if !caller.Defined {
+		enc.AppendString("undefined")
+		return
+	}
+	enc.AppendString(LoggerCallerEncoderTrimmedPath(caller.File, caller.Line))
 }
 
-func LoggerCallerEncoderTrimmedPath(caller zapcore.EntryCaller) string {
+func ContainCallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
 	if !caller.Defined {
-		return "undefined"
+		enc.AppendString("undefined")
 	}
-	index := strings.Index(caller.File, "blog-backend")
-	if index == -1 {
-		return caller.FullPath()
+	for i := 1; i < 20; i++ {
+		_, file, line, ok := runtime.Caller(i)
+		if !ok {
+			break
+		}
+		if strings.Contains(file, "blog-backend/services") {
+			enc.AppendString(LoggerCallerEncoderTrimmedPath(file, line))
+			return
+		}
+	}
+	enc.AppendString(caller.TrimmedPath())
+	return
+}
+
+func LoggerCallerEncoderTrimmedPath(file string, line int) string {
+	projectFilepath := file
+	index := strings.Index(file, "blog-backend")
+	if index != -1 {
+		projectFilepath = file[index:]
 	}
 	buf := loggerPathBufferPool.Get().(*bytes.Buffer)
-	buf.WriteString(caller.File[index:])
+	buf.WriteString(projectFilepath)
 	buf.WriteByte(':')
-	buf.WriteString(strconv.FormatInt(int64(caller.Line), 10))
+	buf.WriteString(strconv.FormatInt(int64(line), 10))
 	path := buf.String()
 	buf.Reset()
 	loggerPathBufferPool.Put(buf)
