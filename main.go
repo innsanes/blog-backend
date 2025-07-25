@@ -4,6 +4,7 @@ import (
 	"blog-backend/core"
 	"blog-backend/global"
 	"blog-backend/router"
+
 	"github.com/innsanes/serv"
 )
 
@@ -14,6 +15,7 @@ func main() {
 	internalServer.RegisterRouter(router.RegisterBlogAuth)
 	internalServer.RegisterRouter(router.RegisterEcho)
 	internalServer.RegisterRouter(router.RegisterPrometheus)
+	internalServer.RegisterRouter(router.RegisterPProf)
 
 	serv.Serve(
 		global.Config,
