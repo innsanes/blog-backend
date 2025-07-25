@@ -3,9 +3,11 @@ package main
 import (
 	"blog-backend/core"
 	"fmt"
-	"github.com/innsanes/conf"
 	"io"
 	"net/http"
+
+	"github.com/innsanes/conf"
+	"go.uber.org/zap"
 )
 
 type DeleteConf struct {
@@ -25,15 +27,15 @@ func main() {
 	url := fmt.Sprintf("%s://%s/blog/%d", c.Protocol, c.Host, c.Id)
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
-		log.Panic("请求删除失败: %v", err)
+		log.Panic("请求删除失败", zap.Error(err))
 	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Panic("请求删除失败: %v", err)
+		log.Panic("请求删除失败", zap.Error(err))
 	}
 	defer resp.Body.Close()
 
-	log.Info("服务器响应状态: %v", resp.Status)
+	log.Info("服务器响应状态", zap.String("status", resp.Status))
 	body, _ := io.ReadAll(resp.Body)
-	log.Info("服务器响应内容: %v", string(body))
+	log.Info("服务器响应内容", zap.String("body", string(body)))
 }

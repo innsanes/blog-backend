@@ -41,6 +41,10 @@ func (s *BlogService) Create(in *req.BlogCreate) (err error) {
 		if txErr = errc.Handle("[Blog.Create] UpdateTags", txErr); txErr != nil {
 			return
 		}
+		txErr = dao.View.Create(tx, "blog", m.ID)
+		if txErr = errc.Handle("[Blog.Create] View", txErr); txErr != nil {
+			return
+		}
 		return
 	})
 	if err = errc.Handle("[Blog.Create] Transaction", err); err != nil {
@@ -108,6 +112,11 @@ func (s *BlogService) Get(in *req.BlogGet) (out *model.Blog, err error) {
 	if err = errc.Handle("[Blog.Get] Get", err); err != nil {
 		return
 	}
+	err = dao.View.Increment(g.MySQL.DB, "blog", in.Id)
+	if err = errc.Handle("[Blog.Get] Increment", err); err != nil {
+		return nil, err
+	}
+	mBlog.View.Count += 1
 	return mBlog, nil
 }
 

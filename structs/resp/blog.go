@@ -5,6 +5,7 @@ type Blog struct {
 	Name       string   `json:"name"`
 	Content    string   `json:"content"`
 	Tags       []string `json:"tags"`
+	View       int64    `json:"view"`
 	CreateTime int64    `json:"createTime"`
 	UpdateTime int64    `json:"updateTime"`
 }

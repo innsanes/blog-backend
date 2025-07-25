@@ -12,6 +12,7 @@ func Blog(in *model.Blog) (out resp.Blog) {
 		Name:       in.Name,
 		Content:    in.Content,
 		Tags:       TagString(in.Tags),
+		View:       in.View.Count,
 		CreateTime: in.CreatedAt.UnixMilli(),
 		UpdateTime: in.UpdatedAt.UnixMilli(),
 	}

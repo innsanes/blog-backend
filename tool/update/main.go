@@ -6,10 +6,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/innsanes/conf"
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/innsanes/conf"
+	"go.uber.org/zap"
 )
 
 type UpdateConf struct {
@@ -31,31 +33,31 @@ func main() {
 	url := fmt.Sprintf("%s://%s/blog/%d", c.Protocol, c.Host, c.Id)
 	contentBytes, err := os.ReadFile(c.FilePath)
 	if err != nil {
-		log.Panic("读取文件失败: %v", err)
+		log.Panic("读取文件失败", zap.Error(err))
 	}
-	payload := req.BlogUpdate{
+	payload := req.BlogUpdateBody{
 		Name:    c.Name,
 		Content: string(contentBytes),
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		log.Panic("JSON 序列化失败: %v", err)
+		log.Panic("JSON 序列化失败", zap.Error(err))
 	}
 
 	r, err := http.NewRequest(http.MethodPut, url, bytes.NewBuffer(jsonData))
 	if err != nil {
-		log.Panic("创建请求失败: %v", err)
+		log.Panic("创建请求失败", zap.Error(err))
 	}
 	r.Header.Set("Content-Type", "application/json") // 设置请求头
 
 	client := &http.Client{}
 	resp, err := client.Do(r)
 	if err != nil {
-		log.Panic("发送请求失败: %v", err)
+		log.Panic("发送请求失败", zap.Error(err))
 	}
 	defer resp.Body.Close()
 
-	log.Info("服务器响应状态: %v", resp.Status)
+	log.Info("服务器响应状态", zap.String("status", resp.Status))
 	body, _ := io.ReadAll(resp.Body)
-	log.Info("服务器响应内容: %v", string(body))
+	log.Info("服务器响应内容", zap.String("body", string(body)))
 }

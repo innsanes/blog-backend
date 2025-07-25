@@ -2,7 +2,6 @@ package core
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"runtime"
 	"strconv"
@@ -38,31 +37,11 @@ func NewLog() *Logger {
 		os.Stdout,
 		zapcore.DebugLevel,
 	)
-	zapLogger := zap.New(zapCore, zap.AddCaller(), zap.AddCallerSkip(1))
+	zapLogger := zap.New(zapCore, zap.AddCaller())
 
 	return &Logger{
 		Logger: zapLogger,
 	}
-}
-
-func (s *Logger) Info(format string, v ...interface{}) {
-	s.Logger.Info(fmt.Sprintf(format, v...))
-}
-
-func (s *Logger) Error(format string, v ...interface{}) {
-	s.Logger.Error(fmt.Sprintf(format, v...))
-}
-
-func (s *Logger) Warn(format string, v ...interface{}) {
-	s.Logger.Warn(fmt.Sprintf(format, v...))
-}
-
-func (s *Logger) Debug(format string, v ...interface{}) {
-	s.Logger.Debug(fmt.Sprintf(format, v...))
-}
-
-func (s *Logger) Panic(format string, v ...interface{}) {
-	s.Logger.Panic(fmt.Sprintf(format, v...))
 }
 
 var loggerPathBufferPool *sync.Pool

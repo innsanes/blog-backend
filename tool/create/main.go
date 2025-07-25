@@ -5,11 +5,13 @@ import (
 	"blog-backend/structs/req"
 	"bytes"
 	"encoding/json"
-	"github.com/innsanes/conf"
 	"io"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/innsanes/conf"
+	"go.uber.org/zap"
 )
 
 type CreateConf struct {
@@ -32,12 +34,12 @@ func main() {
 	filePath := c.FilePath
 
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		log.Panic("文件不存在: %s err:%v", filePath, err)
+		log.Panic("文件不存在", zap.String("filePath", filePath), zap.Error(err))
 	}
 
 	contentBytes, err := os.ReadFile(filePath)
 	if err != nil {
-		log.Panic("读取文件失败: %v", err)
+		log.Panic("读取文件失败", zap.Error(err))
 	}
 
 	payload := req.BlogCreate{
@@ -48,23 +50,23 @@ func main() {
 
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		log.Panic("JSON 序列化失败: %v", err)
+		log.Panic("JSON 序列化失败", zap.Error(err))
 	}
 
 	r, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
-		log.Panic("创建请求失败: %v", err)
+		log.Panic("创建请求失败", zap.Error(err))
 	}
 	r.Header.Set("Content-Type", "application/json") // 设置请求头
 
 	client := &http.Client{}
 	resp, err := client.Do(r)
 	if err != nil {
-		log.Panic("发送请求失败: %v", err)
+		log.Panic("发送请求失败", zap.Error(err))
 	}
 	defer resp.Body.Close()
 
-	log.Info("服务器响应状态: %v", resp.Status)
+	log.Info("服务器响应状态", zap.String("status", resp.Status))
 	body, _ := io.ReadAll(resp.Body)
-	log.Info("服务器响应内容: %v", string(body))
+	log.Info("服务器响应内容", zap.String("body", string(body)))
 }
