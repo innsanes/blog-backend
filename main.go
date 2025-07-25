@@ -20,6 +20,7 @@ func main() {
 	serv.Serve(
 		global.Config,
 		global.MySQL,
+		global.Pyroscope,
 		blogServer,
 		internalServer,
 	)

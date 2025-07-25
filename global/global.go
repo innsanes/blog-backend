@@ -5,7 +5,8 @@ import (
 )
 
 var (
-	Log    = core.NewLog()
-	Config = core.NewConfig()
-	MySQL  = core.NewMOrm()
+	Log       = core.NewLog()
+	Config    = core.NewConfig()
+	MySQL     = core.NewMOrm()
+	Pyroscope = core.NewPyroscope()
 )
