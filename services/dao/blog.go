@@ -42,7 +42,7 @@ func (s *BlogDao) Update(db *gorm.DB, m *model.Blog) (err error) {
 }
 
 func (s *BlogDao) Get(db *gorm.DB, id uint) (t *model.Blog, err error) {
-	err = db.Model(&model.Blog{}).Where("id = ?", id).Preload("Categories").First(&t).Error
+	err = db.Model(&model.Blog{}).Where("id = ?", id).Preload("View").Preload("Categories").First(&t).Error
 	return
 }
 
