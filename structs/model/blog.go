@@ -4,18 +4,18 @@ import "gorm.io/gorm"
 
 func init() {
 	BuildList = append(BuildList, &Blog{})
-	BuildList = append(BuildList, &Tag{})
+	BuildList = append(BuildList, &Category{})
 }
 
 type Blog struct {
 	gorm.Model
-	Name    string `gorm:"column:name;type:VARCHAR(30)"`
-	Content string `gorm:"column:content;type:LONGTEXT"`
-	Tags    []*Tag `gorm:"many2many:blog_tags;"`
-	View    View   `gorm:"polymorphicType:ViewerType;polymorphicId:ViewerID;polymorphicValue:blog"`
+	Name       string      `gorm:"column:name;type:VARCHAR(30)"`
+	Content    string      `gorm:"column:content;type:LONGTEXT"`
+	Categories []*Category `gorm:"many2many:blog_categories;"`
+	View       View        `gorm:"polymorphicType:ViewerType;polymorphicId:ViewerID;polymorphicValue:blog"`
 }
 
-type Tag struct {
+type Category struct {
 	gorm.Model
 	Name string `gorm:"column:name;type:VARCHAR(30)"`
 }

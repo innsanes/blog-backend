@@ -9,19 +9,22 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/innsanes/conf"
 	"go.uber.org/zap"
 )
 
 type UpdateConf struct {
-	Host     string `conf:"host,default=localhost:8001,usage=server_url"`
-	Protocol string `conf:"protocol,default=http"`
-	Id       uint   `conf:"id,usage=blog_id"`
-	Name     string `conf:"name,usage=blog_name"`
-	FilePath string `conf:"filepath,usage=file_path"`
+	Host       string `conf:"host,default=localhost:8001,usage=server_url"`
+	Protocol   string `conf:"protocol,default=http"`
+	Id         uint   `conf:"id,usage=blog_id"`
+	Name       string `conf:"name,usage=blog_name"`
+	FilePath   string `conf:"filepath,usage=file_path"`
+	Categories string `conf:"categories"`
 }
 
+//go:generate go run main.go
 func main() {
 	log := core.NewLog()
 	config := core.NewConfig()
@@ -36,8 +39,9 @@ func main() {
 		log.Panic("读取文件失败", zap.Error(err))
 	}
 	payload := req.BlogUpdateBody{
-		Name:    c.Name,
-		Content: string(contentBytes),
+		Name:       c.Name,
+		Content:    string(contentBytes),
+		Categories: strings.Split(c.Categories, ","),
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {

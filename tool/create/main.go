@@ -15,11 +15,11 @@ import (
 )
 
 type CreateConf struct {
-	Host     string `conf:"host,default=localhost:8001,usage=server_url"`
-	Protocol string `conf:"protocol,default=http"`
-	Name     string `conf:"name,default=test,usage=blog_name"`
-	FilePath string `conf:"filepath,default=test.md,usage=file_path"`
-	Tags     string `conf:"tags,default=,usage=tags"`
+	Host       string `conf:"host,default=localhost:8001,usage=server_url"`
+	Protocol   string `conf:"protocol,default=http"`
+	Name       string `conf:"name,default=test,usage=blog_name"`
+	FilePath   string `conf:"filepath,default=test.md,usage=file_path"`
+	Categories string `conf:"categories,default=,usage=tags"`
 }
 
 func main() {
@@ -43,9 +43,9 @@ func main() {
 	}
 
 	payload := req.BlogCreate{
-		Name:    c.Name,
-		Content: string(contentBytes), // 将文件内容转换为字符串
-		Tags:    strings.Split(c.Tags, ","),
+		Name:       c.Name,
+		Content:    string(contentBytes), // 将文件内容转换为字符串
+		Categories: strings.Split(c.Categories, ","),
 	}
 
 	jsonData, err := json.Marshal(payload)

@@ -4,6 +4,7 @@ import (
 	"blog-backend/structs/req"
 	"bytes"
 	"encoding/json"
+	"go.uber.org/zap"
 	"io"
 	"log"
 	"net/http"
@@ -27,10 +28,14 @@ func TestCreateFile(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
+	contentBytes, err := os.ReadFile("./test.md")
+	if err != nil {
+		log.Panic("读取文件失败", zap.Error(err))
+	}
 	payload := req.BlogCreate{
-		Name:    "test",
-		Content: "md", // 将文件内容转换为字符串
-		Tags:    []string{"tag1", "tag12"},
+		Name:       "测试",
+		Content:    string(contentBytes),
+		Categories: []string{"test1", "test2"},
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {

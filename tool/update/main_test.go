@@ -4,6 +4,7 @@ import (
 	"blog-backend/structs/req"
 	"bytes"
 	"encoding/json"
+	"go.uber.org/zap"
 	"io"
 	"log"
 	"net/http"
@@ -27,10 +28,14 @@ func TestCreateFile(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
+	contentBytes, err := os.ReadFile("./test.md")
+	if err != nil {
+		log.Panic("读取文件失败", zap.Error(err))
+	}
 	payload := req.BlogUpdateBody{
-		Name:    "test",
-		Content: "md213123", // 将文件内容转换为字符串
-		Tags:    []string{"tag2", "tag3", "tag4"},
+		Name:       "how to build a binary file",
+		Content:    string(contentBytes), // 将文件内容转换为字符串
+		Categories: []string{"golang", "program"},
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
