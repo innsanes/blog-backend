@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"fmt"
 
 	"github.com/innsanes/conf"
 	"go.uber.org/zap"
