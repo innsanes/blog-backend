@@ -30,7 +30,7 @@ func main() {
 	conf.RegisterConfWithName("s", c)
 	_ = config.Serve()
 	_ = config.AfterServe()
-	url := c.Protocol + "://" + c.Host + "/blog/create"
+	url := fmt.Sprintf("%s://%s/blog", c.Protocol, c.Host)
 	filePath := c.FilePath
 
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
