@@ -67,6 +67,25 @@ func BlogGet(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
+func BlogGetAdmin(ctx *gin.Context) {
+	idString := ctx.Param("id")
+	id, err := strconv.ParseUint(idString, 10, strconv.IntSize)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	request := &req.BlogGet{
+		Id: uint(id),
+	}
+	blog, err := service.Blog.GetAdmin(request)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	response := tod.Blog(blog)
+	ctx.JSON(http.StatusOK, response)
+}
+
 func BlogList(ctx *gin.Context) {
 	params := &req.BlogList{}
 	if err := ctx.ShouldBind(params); err != nil {

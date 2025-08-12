@@ -14,6 +14,8 @@ func RegisterBlog(group *gin.RouterGroup) {
 
 func RegisterBlogAuth(group *gin.RouterGroup) {
 	blogGroup := group.Group("/blog")
+	blogGroup.GET(":id", handler.BlogGetAdmin)
+	blogGroup.GET("", handler.BlogList)
 	blogGroup.POST("", handler.BlogCreate)
 	blogGroup.PUT(":id", handler.BlogUpdate)
 	blogGroup.DELETE(":id", handler.BlogDelete)

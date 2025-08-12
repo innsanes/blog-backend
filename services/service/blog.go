@@ -19,6 +19,7 @@ type IBlog interface {
 	Create(in *req.BlogCreate) (err error)
 	Update(in *req.BlogUpdate) (err error)
 	Get(in *req.BlogGet) (out *model.Blog, err error)
+	GetAdmin(in *req.BlogGet) (out *model.Blog, err error)
 	List(in *req.BlogList) (out []*model.Blog, err error)
 	Delete(in *req.BlogDelete) (err error)
 }
@@ -118,6 +119,14 @@ func (s *BlogService) Get(in *req.BlogGet) (out *model.Blog, err error) {
 	}
 	mBlog.View.Count += 1
 	return mBlog, nil
+}
+
+func (s *BlogService) GetAdmin(in *req.BlogGet) (out *model.Blog, err error) {
+	out, err = dao.Blog.Get(g.MySQL.DB, in.Id)
+	if err = errc.Handle("[Blog.GetAdmin] Get", err); err != nil {
+		return
+	}
+	return
 }
 
 func (s *BlogService) List(in *req.BlogList) (out []*model.Blog, err error) {
