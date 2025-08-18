@@ -2,6 +2,7 @@ package req
 
 type BlogCreate struct {
 	Name       string   `json:"name" binding:"required,min=1,max=30"`
+	Summary    string   `json:"summary" binding:"required,min=1,max=255"`
 	Content    string   `json:"content" binding:"required"`
 	Categories []string `json:"categories" binding:"omitempty,max=10,dive,min=1,max=20"`
 }
@@ -13,6 +14,7 @@ type BlogUpdate struct {
 
 type BlogUpdateBody struct {
 	Name       string   `json:"name" binding:"required,min=1,max=30"`
+	Summary    string   `json:"summary" binding:"required,min=1,max=255"`
 	Content    string   `json:"content" binding:"required"`
 	Categories []string `json:"categories" binding:"omitempty,max=10,dive,min=1,max=20"`
 }

@@ -11,6 +11,7 @@ func Blog(in *model.Blog) (out resp.Blog) {
 	return resp.Blog{
 		Id:         in.ID,
 		Name:       in.Name,
+		Summary:    in.Summary,
 		Content:    in.Content,
 		Categories: CategoryString(in.Categories),
 		View:       in.View.Count,
@@ -24,6 +25,7 @@ func BlogListItem(in *model.Blog) (out resp.BlogListItem) {
 	return resp.BlogListItem{
 		Id:         in.ID,
 		Name:       in.Name,
+		Summary:    in.Summary,
 		Categories: CategoryString(in.Categories),
 		CreateTime: in.CreatedAt.UnixMilli(),
 		UpdateTime: in.UpdatedAt.UnixMilli(),
