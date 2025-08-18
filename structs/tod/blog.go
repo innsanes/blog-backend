@@ -4,6 +4,7 @@ import (
 	"blog-backend/structs/model"
 	"blog-backend/structs/resp"
 	"blog-backend/structs/to"
+	"unicode/utf8"
 )
 
 func Blog(in *model.Blog) (out resp.Blog) {
@@ -13,6 +14,7 @@ func Blog(in *model.Blog) (out resp.Blog) {
 		Content:    in.Content,
 		Categories: CategoryString(in.Categories),
 		View:       in.View.Count,
+		Characters: int64(utf8.RuneCountInString(in.Content)),
 		CreateTime: in.CreatedAt.UnixMilli(),
 		UpdateTime: in.UpdatedAt.UnixMilli(),
 	}

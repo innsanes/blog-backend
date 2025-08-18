@@ -6,6 +6,7 @@ type Blog struct {
 	Content    string   `json:"content"`
 	Categories []string `json:"categories"`
 	View       int64    `json:"view"`
+	Characters int64    `json:"characters"`
 	CreateTime int64    `json:"createTime"`
 	UpdateTime int64    `json:"updateTime"`
 }
