@@ -32,6 +32,7 @@ func (s *BlogService) Create(in *req.BlogCreate) (err error) {
 		}
 		m := &model.Blog{
 			Name:    in.Name,
+			Summary: in.Summary,
 			Content: in.Content,
 		}
 		txErr = dao.Blog.Create(tx, m)
@@ -90,6 +91,7 @@ func (s *BlogService) Update(in *req.BlogUpdate) (err error) {
 				ID: in.Id,
 			},
 			Name:    in.Name,
+			Summary: in.Summary,
 			Content: in.Content,
 		}
 		txError = dao.Blog.Update(tx, mBlog)
