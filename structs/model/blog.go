@@ -9,7 +9,7 @@ func init() {
 
 type Blog struct {
 	gorm.Model
-	Name       string      `gorm:"column:name;type:VARCHAR(30)"`
+	Name       string      `gorm:"column:name;type:VARCHAR(63)"`
 	Summary    string      `gorm:"column:summary;type:VARCHAR(255)"`
 	Content    string      `gorm:"column:content;type:LONGTEXT"`
 	Categories []*Category `gorm:"many2many:blog_categories;"`
