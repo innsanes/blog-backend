@@ -42,3 +42,18 @@ func BlogList(in []*model.Blog) (out resp.BlogList) {
 func CategoryString(in []*model.Category) []string {
 	return to.Slice(in, func(elem *model.Category) string { return elem.Name })
 }
+
+func ImageList(in []*model.Image) (out resp.ImageList) {
+	return resp.ImageList{
+		Data:  to.Slice(in, ImageListItem),
+		Count: 0,
+	}
+}
+
+func ImageListItem(in *model.Image) (out resp.ImageListItem) {
+	return resp.ImageListItem{
+		Name:       in.Name,
+		MD5:        in.MD5,
+		CreateTime: in.CreatedAt.UnixMilli(),
+	}
+}

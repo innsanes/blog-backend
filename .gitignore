@@ -2,3 +2,5 @@
 config.yaml
 image
 test.md
+./images
+.DS_Store

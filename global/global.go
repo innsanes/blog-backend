@@ -9,4 +9,5 @@ var (
 	Config    = core.NewConfig()
 	MySQL     = core.NewMOrm()
 	Pyroscope = core.NewPyroscope()
+	Image     = core.NewImage()
 )
