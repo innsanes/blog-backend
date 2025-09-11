@@ -10,11 +10,11 @@ import (
 	"crypto/md5"
 	"fmt"
 	"image"
-	"image/jpeg"
 	"io"
 	"os"
 	"path/filepath"
 
+	"github.com/chai2010/webp"
 	"github.com/disintegration/imaging"
 	"gorm.io/gorm"
 )
@@ -37,16 +37,14 @@ func (s *ImageService) Create(in *req.ImageCreate) (msg string, err error) {
 	}
 	defer file.Close()
 
+	// 读取文件名称扩展名
+	fileName := in.File.Filename
+	ext := filepath.Ext(fileName)
+
 	// 读取文件内容
-	data, err := io.ReadAll(file)
+	originData, err := io.ReadAll(file)
 	if err != nil {
 		return "", errc.Handle("[Image.Create] Read file", err)
-	}
-
-	// 生成origin版本 (1920x1080, 质量100)
-	originData, err := s.compress(data, 1920, 1080, 100)
-	if err != nil {
-		return "", errc.Handle("[Image.Create] Convert to origin", err)
 	}
 
 	// 计算origin版本的MD5
@@ -54,8 +52,11 @@ func (s *ImageService) Create(in *req.ImageCreate) (msg string, err error) {
 	originHasher.Write(originData)
 	originMD5 := fmt.Sprintf("%x", originHasher.Sum(nil))
 
-	// 生成compressed版本 (1080x720, 质量75)
-	compressedData, err := s.compress(originData, 1080, 720, 75)
+	// 生成compressed版本 (1920*1080, 质量90)
+	maxWidth := global.Image.Config.MaxWidth
+	maxHeight := global.Image.Config.MaxHeight
+	quality := global.Image.Config.Quality
+	compressedData, err := s.compress(originData, maxWidth, maxHeight, quality)
 	if err != nil {
 		return "", errc.Handle("[Image.Create] Convert to compressed", err)
 	}
@@ -64,8 +65,9 @@ func (s *ImageService) Create(in *req.ImageCreate) (msg string, err error) {
 	err = global.MySQL.Transaction(func(tx *gorm.DB) (txErr error) {
 		// 将name和MD5存入数据库
 		imageModel := &model.Image{
-			Name: in.Name,
-			MD5:  originMD5,
+			Name:     in.Name,
+			FileName: fileName,
+			MD5:      originMD5,
 		}
 
 		txErr = dao.Image.Create(tx, imageModel)
@@ -73,15 +75,15 @@ func (s *ImageService) Create(in *req.ImageCreate) (msg string, err error) {
 			return
 		}
 
-		// 保存origin文件
-		originPath := filepath.Join(global.Image.Path, "origin", originMD5+".jpg")
+		// 保存origin文件 (原始格式)
+		originPath := filepath.Join(global.Image.Config.Path, "origin", originMD5+ext)
 		txErr = s.saveFile(originData, originPath)
 		if txErr = errc.Handle("[Image.Create] Save origin file", txErr); txErr != nil {
 			return
 		}
 
-		// 保存compressed文件
-		compressedPath := filepath.Join(global.Image.Path, "compressed", originMD5+".jpg")
+		// 保存compressed文件 (WebP格式)
+		compressedPath := filepath.Join(global.Image.Config.Path, "compressed", originMD5+".webp")
 		txErr = s.saveFile(compressedData, compressedPath)
 		if txErr = errc.Handle("[Image.Create] Save compressed file", txErr); txErr != nil {
 			return
@@ -99,8 +101,8 @@ func (s *ImageService) Create(in *req.ImageCreate) (msg string, err error) {
 
 func (s *ImageService) Get(in *req.ImageGet) (data []byte, err error) {
 	// 直接从compressed目录获取图片
-	// 路径格式: md5.jpg
-	filePath := filepath.Join(global.Image.Path, "compressed", in.Path)
+	// 路径格式: md5.webp
+	filePath := filepath.Join(global.Image.Config.Path, "compressed", in.Path)
 
 	// 检查文件是否存在
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
@@ -155,10 +157,12 @@ func (s *ImageService) compress(data []byte, maxWidth int, maxHeight int, qualit
 		resizedImg = imaging.Resize(img, newWidth, newHeight, imaging.Lanczos)
 	}
 
-	// 转换为JPG格式，质量100
 	var buf bytes.Buffer
-	err = jpeg.Encode(&buf, resizedImg, &jpeg.Options{Quality: quality})
-	if err != nil {
+	options := &webp.Options{
+		Lossless: true,
+		Quality:  float32(quality),
+	}
+	if err = webp.Encode(&buf, resizedImg, options); err != nil {
 		return nil, err
 	}
 

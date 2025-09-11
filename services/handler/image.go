@@ -33,9 +33,9 @@ func ImageGet(ctx *gin.Context) {
 	imagePath := ctx.Param("image_path")
 
 	// 安全检查
-	md5Regex := regexp.MustCompile(`^[a-f0-9]{32}\.jpg$`)
+	md5Regex := regexp.MustCompile(`^[a-f0-9]{32}\.[a-zA-Z0-9]{1,6}$`)
 	if !md5Regex.MatchString(imagePath) {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid file format, expected: 32-char-md5.jpg"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid file format, expected: 32-char-md5.ext"})
 		return
 	}
 
@@ -50,9 +50,9 @@ func ImageGet(ctx *gin.Context) {
 	}
 
 	// 设置响应头
-	ctx.Header("Content-Type", "image/jpeg")
+	ctx.Header("Content-Type", "image/webp")
 	ctx.Header("Cache-Control", "public, max-age=31536000") // 缓存1年
-	ctx.Data(http.StatusOK, "image/jpeg", imageData)
+	ctx.Data(http.StatusOK, "image/webp", imageData)
 }
 
 func ImageList(ctx *gin.Context) {

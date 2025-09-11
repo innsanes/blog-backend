@@ -77,7 +77,6 @@ func ContainCallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArray
 		}
 	}
 	enc.AppendString(caller.TrimmedPath())
-	return
 }
 
 func LoggerCallerEncoderTrimmedPath(file string, line int) string {

@@ -10,46 +10,44 @@ import (
 
 type Image struct {
 	*serv.Service
-	Path    string
-	Quality int
-	config  *ImageConfig
+	Config *ImageConfig
 }
 
 type ImageConfig struct {
-	Path    string `conf:"path,default=./images"`
-	Quality int    `conf:"quality,default=75,usage=image_quality"`
+	Path      string `conf:"path,default=./images"`
+	Quality   int    `conf:"quality,default=90,usage=image_quality"`
+	MaxWidth  int    `conf:"max_width,default=1920,usage=image_max_width"`
+	MaxHeight int    `conf:"max_height,default=1080,usage=image_max_height"`
 }
 
 func NewImage() *Image {
 	return &Image{
-		config: &ImageConfig{},
+		Config: &ImageConfig{},
 	}
 }
 
 func (s *Image) BeforeServe() (err error) {
-	conf.RegisterConf(s.config)
+	conf.RegisterConfWithName("image", s.Config)
 	return
 }
 
 func (s *Image) Serve() (err error) {
-	s.Path = s.config.Path
-	s.Quality = s.config.Quality
 	// 创建目录
-	if _, err := os.Stat(s.Path); os.IsNotExist(err) {
-		err = os.MkdirAll(s.Path, 0755)
+	if _, err := os.Stat(s.Config.Path); os.IsNotExist(err) {
+		err = os.MkdirAll(s.Config.Path, 0755)
 		if err != nil {
 			return err
 		}
 	}
 	// 创建origin和compressed目录
-	if _, err := os.Stat(filepath.Join(s.Path, "origin")); os.IsNotExist(err) {
-		err = os.MkdirAll(filepath.Join(s.Path, "origin"), 0755)
+	if _, err := os.Stat(filepath.Join(s.Config.Path, "origin")); os.IsNotExist(err) {
+		err = os.MkdirAll(filepath.Join(s.Config.Path, "origin"), 0755)
 		if err != nil {
 			return err
 		}
 	}
-	if _, err := os.Stat(filepath.Join(s.Path, "compressed")); os.IsNotExist(err) {
-		err = os.MkdirAll(filepath.Join(s.Path, "compressed"), 0755)
+	if _, err := os.Stat(filepath.Join(s.Config.Path, "compressed")); os.IsNotExist(err) {
+		err = os.MkdirAll(filepath.Join(s.Config.Path, "compressed"), 0755)
 		if err != nil {
 			return err
 		}

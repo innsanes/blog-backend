@@ -3,12 +3,12 @@ package core
 import (
 	"blog-backend/structs/model"
 	"fmt"
-	"gorm.io/gorm/logger"
 
 	"github.com/innsanes/conf"
 	"github.com/innsanes/serv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type MOrm struct {
@@ -28,7 +28,9 @@ type MySQLConfig struct {
 }
 
 func NewMOrm() *MOrm {
-	return &MOrm{}
+	return &MOrm{
+		logger: NewMOrmLogger(),
+	}
 }
 
 func (s *MOrm) BeforeServe() (err error) {
@@ -42,17 +44,17 @@ func (s *MOrm) Serve() (err error) {
 		s.config.User, s.config.Pass, s.config.Host, s.config.Port, s.config.DBName, s.config.Charset)
 
 	s.DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger:                                   NewMOrmLogger(),
+		Logger:                                   s.logger,
 		DisableForeignKeyConstraintWhenMigrating: true,
 	})
 	if err != nil {
 		return err
 	}
-	s.Logger.LogMode(logger.Silent)
+	s.logger.LogMode(logger.Silent)
 	err = s.AutoMigrate(model.BuildList...)
 	if err != nil {
 		return err
 	}
-	s.Logger.LogMode(logger.Info)
+	s.logger.LogMode(logger.Info)
 	return
 }
