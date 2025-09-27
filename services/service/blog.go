@@ -3,11 +3,17 @@ package service
 import (
 	g "blog-backend/global"
 	"blog-backend/services/dao"
+	"blog-backend/services/search"
 	"blog-backend/structs/errc"
 	"blog-backend/structs/model"
+	"blog-backend/structs/msearch"
 	"blog-backend/structs/req"
+	"blog-backend/structs/tom"
+	"encoding/json"
 	"slices"
+	"strconv"
 
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -22,6 +28,7 @@ type IBlog interface {
 	GetAdmin(in *req.BlogGet) (out *model.Blog, err error)
 	List(in *req.BlogList) (out []*model.Blog, err error)
 	Delete(in *req.BlogDelete) (err error)
+	Search(in *req.BlogList) (out []*model.Blog, err error)
 }
 
 func (s *BlogService) Create(in *req.BlogCreate) (err error) {
@@ -47,6 +54,11 @@ func (s *BlogService) Create(in *req.BlogCreate) (err error) {
 		if txErr = errc.Handle("[Blog.Create] View", txErr); txErr != nil {
 			return
 		}
+		search.InsertBlog(g.Meilisearch.ServiceManager, &msearch.Blog{
+			ID:      strconv.FormatUint(uint64(m.ID), 10),
+			Name:    m.Name,
+			Content: m.Content,
+		})
 		return
 	})
 	if err = errc.Handle("[Blog.Create] Transaction", err); err != nil {
@@ -102,6 +114,11 @@ func (s *BlogService) Update(in *req.BlogUpdate) (err error) {
 		if txError = errc.Handle("[Blog.Update] UpdateCategories", txError); txError != nil {
 			return
 		}
+		search.UpdateBlog(g.Meilisearch.ServiceManager, &msearch.Blog{
+			ID:      strconv.FormatUint(uint64(mBlog.ID), 10),
+			Name:    mBlog.Name,
+			Content: mBlog.Content,
+		})
 		return
 	})
 	if err = errc.Handle("[Blog.Update] Transaction", err); err != nil {
@@ -132,6 +149,10 @@ func (s *BlogService) GetAdmin(in *req.BlogGet) (out *model.Blog, err error) {
 }
 
 func (s *BlogService) List(in *req.BlogList) (out []*model.Blog, err error) {
+	if in.Search != "" {
+		out, err = s.Search(in)
+		return
+	}
 	if in.UseCursor {
 		out, err = s.ListWithCursor(in)
 	} else {
@@ -217,5 +238,30 @@ func (s *BlogService) Delete(in *req.BlogDelete) (err error) {
 	if err = errc.Handle("[Blog.Delete] Delete", err); err != nil {
 		return
 	}
+	search.DeleteBlog(g.Meilisearch.ServiceManager, strconv.FormatUint(uint64(in.Id), 10))
+	return
+}
+
+func (s *BlogService) Search(in *req.BlogList) (out []*model.Blog, err error) {
+	searchRes, err := search.SearchBlog(g.Meilisearch.ServiceManager, in.Search)
+	if err = errc.Handle("[Blog.Search] Search", err); err != nil {
+		return
+	}
+	result := make([]*msearch.Blog, 0, len(searchRes.Hits))
+	for _, hit := range searchRes.Hits {
+		formatted, ok := hit["_formatted"]
+		if !ok {
+			g.Log.Error("[Blog.Search] search _formatted not found", zap.Any("hit", hit))
+			continue
+		}
+		b := &msearch.Blog{}
+		err = json.Unmarshal(formatted, b)
+		if err != nil {
+			g.Log.Error("[Blog.Search] search _formatted unmarshal error", zap.Any("error", err))
+			continue
+		}
+		result = append(result, b)
+	}
+	out = tom.BlogSearchList(result)
 	return
 }

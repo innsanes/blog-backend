@@ -24,6 +24,7 @@ func main() {
 		global.Image,
 		global.MySQL,
 		global.Pyroscope,
+		global.Meilisearch,
 		blogServer,
 		internalServer,
 	)
