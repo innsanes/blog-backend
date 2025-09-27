@@ -2,8 +2,8 @@ package main
 
 import (
 	"blog-backend/core"
-	"blog-backend/services/dao"
 	"blog-backend/services/search"
+	"blog-backend/structs/model"
 	"blog-backend/structs/msearch"
 	"fmt"
 	"strconv"
@@ -38,7 +38,8 @@ func main() {
 
 	// 获取所有博客
 	log.Info("获取所有博客...")
-	blogs, err := dao.Blog.ListPage(db, 0, 100)
+	blogs := make([]*model.Blog, 0)
+	err = db.Model(&model.Blog{}).Offset(0).Limit(1000).Preload("Categories").Find(&blogs).Error
 	if err != nil {
 		log.Panic("获取博客失败", zap.Error(err))
 	}
@@ -56,7 +57,7 @@ func main() {
 		}
 
 		// 插入到Meilisearch
-		err := search.InsertBlog(client, searchDoc)
+		err := search.UpdateBlog(client, searchDoc)
 		if err != nil {
 			log.Error("插入博客失败",
 				zap.Uint("id", blog.ID),
