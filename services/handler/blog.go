@@ -118,3 +118,18 @@ func BlogDelete(ctx *gin.Context) {
 	}
 	ctx.Status(http.StatusNoContent)
 }
+
+func BlogSearch(ctx *gin.Context) {
+	params := &req.BlogSearch{}
+	if err := ctx.ShouldBind(params); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	blogs, err := service.Blog.Search(params)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	response := tod.BlogSearchList(blogs)
+	ctx.JSON(http.StatusOK, response)
+}

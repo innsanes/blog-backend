@@ -2,9 +2,10 @@ package tod
 
 import (
 	"blog-backend/structs/model"
+	"blog-backend/structs/msearch"
 	"blog-backend/structs/resp"
 	"blog-backend/structs/to"
-
+	"strconv"
 	"unicode/utf8"
 )
 
@@ -56,5 +57,25 @@ func ImageListItem(in *model.Image) (out resp.ImageListItem) {
 		Name:       in.Name,
 		MD5:        in.MD5,
 		CreateTime: in.CreatedAt.UnixMilli(),
+	}
+}
+
+func BlogSearchList(in []*msearch.BlogSearch) (out resp.BlogSearchList) {
+	return resp.BlogSearchList{
+		Data:  to.Slice(in, BlogSearchListItem),
+		Count: 0,
+	}
+}
+
+func BlogSearchListItem(in *msearch.BlogSearch) (out resp.BlogSearchListItem) {
+	id, err := strconv.ParseUint(in.ID, 10, strconv.IntSize)
+	if err != nil {
+		return
+	}
+	return resp.BlogSearchListItem{
+		Id:         uint(id),
+		Name:       in.Name,
+		Summary:    in.Content,
+		MatchCount: in.MatchCount,
 	}
 }

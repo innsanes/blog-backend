@@ -10,6 +10,7 @@ func RegisterBlog(group *gin.RouterGroup) {
 	blogGroup := group.Group("/blog")
 	blogGroup.GET(":id", handler.BlogGet)
 	blogGroup.GET("", handler.BlogList)
+	blogGroup.GET("/search", handler.BlogSearch)
 }
 
 func RegisterBlogAuth(group *gin.RouterGroup) {
@@ -19,4 +20,5 @@ func RegisterBlogAuth(group *gin.RouterGroup) {
 	blogGroup.POST("", handler.BlogCreate)
 	blogGroup.PUT(":id", handler.BlogUpdate)
 	blogGroup.DELETE(":id", handler.BlogDelete)
+	blogGroup.GET("/search", handler.BlogSearch)
 }

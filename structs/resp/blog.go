@@ -25,3 +25,15 @@ type BlogListItem struct {
 	CreateTime int64    `json:"createTime"`
 	UpdateTime int64    `json:"updateTime"`
 }
+
+type BlogSearchList struct {
+	Data  []BlogSearchListItem `json:"data"`
+	Count int64                `json:"count"`
+}
+
+type BlogSearchListItem struct {
+	Id         uint   `json:"id"`
+	Name       string `json:"name"`
+	Summary    string `json:"summary"`
+	MatchCount int32  `json:"matchCount"`
+}

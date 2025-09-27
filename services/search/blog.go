@@ -58,11 +58,12 @@ func DeleteBlog(client meilisearch.ServiceManager, id string) (err error) {
 func SearchBlog(client meilisearch.ServiceManager, query string) (result *meilisearch.SearchResponse, err error) {
 	index := client.Index("blogs")
 	searchRes, err := index.Search(query, &meilisearch.SearchRequest{
-		AttributesToCrop: []string{"name", "content"},
-		CropLength:       15,
-		CropMarker:       "...",
-		HighlightPreTag:  "<em>",
-		HighlightPostTag: "</em>",
+		AttributesToCrop:    []string{"name", "content"},
+		CropLength:          15,
+		CropMarker:          "...",
+		HighlightPreTag:     "<em>",
+		HighlightPostTag:    "</em>",
+		ShowMatchesPosition: true,
 	})
 	if err != nil {
 		return result, err

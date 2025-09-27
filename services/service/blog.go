@@ -8,7 +8,6 @@ import (
 	"blog-backend/structs/model"
 	"blog-backend/structs/msearch"
 	"blog-backend/structs/req"
-	"blog-backend/structs/tom"
 	"encoding/json"
 	"slices"
 	"strconv"
@@ -28,7 +27,7 @@ type IBlog interface {
 	GetAdmin(in *req.BlogGet) (out *model.Blog, err error)
 	List(in *req.BlogList) (out []*model.Blog, err error)
 	Delete(in *req.BlogDelete) (err error)
-	Search(in *req.BlogList) (out []*model.Blog, err error)
+	Search(in *req.BlogSearch) (out []*msearch.BlogSearch, err error)
 }
 
 func (s *BlogService) Create(in *req.BlogCreate) (err error) {
@@ -149,10 +148,6 @@ func (s *BlogService) GetAdmin(in *req.BlogGet) (out *model.Blog, err error) {
 }
 
 func (s *BlogService) List(in *req.BlogList) (out []*model.Blog, err error) {
-	if in.Search != "" {
-		out, err = s.Search(in)
-		return
-	}
 	if in.UseCursor {
 		out, err = s.ListWithCursor(in)
 	} else {
@@ -242,12 +237,12 @@ func (s *BlogService) Delete(in *req.BlogDelete) (err error) {
 	return
 }
 
-func (s *BlogService) Search(in *req.BlogList) (out []*model.Blog, err error) {
+func (s *BlogService) Search(in *req.BlogSearch) (out []*msearch.BlogSearch, err error) {
 	searchRes, err := search.SearchBlog(g.Meilisearch.ServiceManager, in.Search)
 	if err = errc.Handle("[Blog.Search] Search", err); err != nil {
 		return
 	}
-	result := make([]*msearch.Blog, 0, len(searchRes.Hits))
+	out = make([]*msearch.BlogSearch, 0, len(searchRes.Hits))
 	for _, hit := range searchRes.Hits {
 		formatted, ok := hit["_formatted"]
 		if !ok {
@@ -260,8 +255,23 @@ func (s *BlogService) Search(in *req.BlogList) (out []*model.Blog, err error) {
 			g.Log.Error("[Blog.Search] search _formatted unmarshal error", zap.Any("error", err))
 			continue
 		}
-		result = append(result, b)
+		bs := &msearch.BlogSearch{
+			Blog: *b,
+		}
+		matchesPosition, ok := hit["_matchesPosition"]
+		if !ok {
+			g.Log.Error("[Blog.Search] search _matchesPosition not found", zap.Any("hit", hit))
+			continue
+		}
+		blogMatchesPosition := &msearch.BlogSearchMatchPositions{}
+		err = json.Unmarshal(matchesPosition, blogMatchesPosition)
+		if err != nil {
+			g.Log.Error("[Blog.Search] search _matchesPosition unmarshal error", zap.Any("error", err))
+			continue
+		}
+		// 计算所有字段的总匹配次数
+		bs.MatchCount = int32(len(blogMatchesPosition.Content) + len(blogMatchesPosition.Name))
+		out = append(out, bs)
 	}
-	out = tom.BlogSearchList(result)
 	return
 }
