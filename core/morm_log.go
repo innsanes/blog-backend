@@ -17,27 +17,18 @@ type MOrmLogger struct {
 	config logger.Config
 }
 
-func NewMOrmLogger() *MOrmLogger {
-	zapLoggerEncoderConfig := zapcore.EncoderConfig{
-		TimeKey:          "time",
-		LevelKey:         "level",
-		NameKey:          "logger",
-		CallerKey:        "caller",
-		MessageKey:       "message",
-		StacktraceKey:    "stacktrace",
-		EncodeCaller:     ContainCallerEncoder,
-		EncodeTime:       zapcore.RFC3339TimeEncoder,
-		EncodeLevel:      zapcore.CapitalColorLevelEncoder,
-		EncodeDuration:   zapcore.SecondsDurationEncoder,
-		LineEnding:       "",
-		ConsoleSeparator: " ",
+func NewMOrmLogger(isJsonFormat bool) *MOrmLogger {
+	var encoder zapcore.Encoder
+	if isJsonFormat {
+		encoderConfig := ZapEncoderConfigJson()
+		encoderConfig.EncodeCaller = ContainCallerEncoder
+		encoder = zapcore.NewJSONEncoder(encoderConfig)
+	} else {
+		encoderConfig := ZapEncoderConfigConsole()
+		encoderConfig.EncodeCaller = ContainCallerEncoder
+		encoder = zapcore.NewConsoleEncoder(encoderConfig)
 	}
-
-	zapCore := zapcore.NewCore(
-		zapcore.NewConsoleEncoder(zapLoggerEncoderConfig),
-		os.Stdout,
-		zapcore.DebugLevel,
-	)
+	zapCore := zapcore.NewCore(encoder, os.Stdout, zapcore.DebugLevel)
 	zapLogger := zap.New(zapCore, zap.AddCaller(), zap.AddCallerSkip(3))
 
 	config := logger.Config{

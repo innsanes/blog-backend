@@ -2,6 +2,8 @@ package core
 
 import (
 	"bytes"
+	"github.com/innsanes/conf"
+	"github.com/innsanes/serv"
 	"os"
 	"runtime"
 	"strconv"
@@ -13,35 +15,40 @@ import (
 )
 
 type Logger struct {
+	*serv.Service
 	*zap.Logger
+	config *LoggerConfig
+}
+
+type LoggerConfig struct {
+	Json bool `conf:"json,default=false"`
 }
 
 func NewLog() *Logger {
-	zapLoggerEncoderConfig := zapcore.EncoderConfig{
-		TimeKey:          "time",
-		LevelKey:         "level",
-		NameKey:          "logger",
-		CallerKey:        "caller",
-		MessageKey:       "message",
-		StacktraceKey:    "stacktrace",
-		EncodeCaller:     LoggerCallerEncoder,
-		EncodeTime:       zapcore.RFC3339TimeEncoder,
-		EncodeLevel:      zapcore.CapitalColorLevelEncoder,
-		EncodeDuration:   zapcore.SecondsDurationEncoder,
-		LineEnding:       "",
-		ConsoleSeparator: " ",
-	}
+	return &Logger{}
+}
 
-	zapCore := zapcore.NewCore(
-		zapcore.NewConsoleEncoder(zapLoggerEncoderConfig),
-		os.Stdout,
-		zapcore.DebugLevel,
-	)
+func (s *Logger) BeforeServe() (err error) {
+	s.config = &LoggerConfig{}
+	conf.RegisterConfWithName("log", s.config)
+	return
+}
+
+func (s *Logger) Serve() (err error) {
+	var encoder zapcore.Encoder
+	if s.config.Json {
+		encoderConfig := ZapEncoderConfigJson()
+		encoderConfig.EncodeCaller = LoggerCallerEncoder
+		encoder = zapcore.NewJSONEncoder(encoderConfig)
+	} else {
+		encoderConfig := ZapEncoderConfigConsole()
+		encoderConfig.EncodeCaller = LoggerCallerEncoder
+		encoder = zapcore.NewConsoleEncoder(encoderConfig)
+	}
+	zapCore := zapcore.NewCore(encoder, os.Stdout, zapcore.DebugLevel)
 	zapLogger := zap.New(zapCore, zap.AddCaller())
-
-	return &Logger{
-		Logger: zapLogger,
-	}
+	s.Logger = zapLogger
+	return
 }
 
 var loggerPathBufferPool *sync.Pool
@@ -51,6 +58,39 @@ func init() {
 		New: func() interface{} {
 			return new(bytes.Buffer)
 		},
+	}
+}
+
+func ZapEncoderConfigConsole() zapcore.EncoderConfig {
+	return zapcore.EncoderConfig{
+		TimeKey:          "time",
+		LevelKey:         "level",
+		NameKey:          "logger",
+		CallerKey:        "caller",
+		MessageKey:       "message",
+		StacktraceKey:    "stacktrace",
+		EncodeTime:       zapcore.RFC3339TimeEncoder,
+		EncodeLevel:      zapcore.CapitalColorLevelEncoder,
+		EncodeDuration:   zapcore.SecondsDurationEncoder,
+		LineEnding:       "",
+		ConsoleSeparator: " ",
+	}
+
+}
+
+func ZapEncoderConfigJson() zapcore.EncoderConfig {
+	return zapcore.EncoderConfig{
+		TimeKey:          "time",
+		LevelKey:         "level",
+		NameKey:          "logger",
+		CallerKey:        "caller",
+		MessageKey:       "message",
+		StacktraceKey:    "stacktrace",
+		EncodeTime:       zapcore.RFC3339TimeEncoder,
+		EncodeLevel:      zapcore.CapitalLevelEncoder,
+		EncodeDuration:   zapcore.MillisDurationEncoder,
+		LineEnding:       "",
+		ConsoleSeparator: "",
 	}
 }
 

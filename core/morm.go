@@ -3,7 +3,6 @@ package core
 import (
 	"blog-backend/structs/model"
 	"fmt"
-
 	"github.com/innsanes/conf"
 	"github.com/innsanes/serv"
 	"gorm.io/driver/mysql"
@@ -19,18 +18,17 @@ type MOrm struct {
 }
 
 type MySQLConfig struct {
-	User    string `conf:"user,default=root,usage=mysql_user"`
-	Pass    string `conf:"pass,default=123456,usage=mysql_pass"`
-	Host    string `conf:"host,default=localhost,usage=mysql_host"`
-	Port    int    `conf:"port,default=3306,usage=mysql_port"`
-	DBName  string `conf:"dbname,default=blog,usage=mysql_dbname"`
-	Charset string `conf:"charset,default=utf8mb4,usage=mysql_charset"`
+	User          string `conf:"user,default=root,usage=mysql_user"`
+	Pass          string `conf:"pass,default=123456,usage=mysql_pass"`
+	Host          string `conf:"host,default=localhost,usage=mysql_host"`
+	Port          int    `conf:"port,default=3306,usage=mysql_port"`
+	DBName        string `conf:"dbname,default=blog,usage=mysql_dbname"`
+	Charset       string `conf:"charset,default=utf8mb4,usage=mysql_charset"`
+	LogFormatJson bool   `conf:"log_format_json,default=false"`
 }
 
 func NewMOrm() *MOrm {
-	return &MOrm{
-		logger: NewMOrmLogger(),
-	}
+	return &MOrm{}
 }
 
 func (s *MOrm) BeforeServe() (err error) {
@@ -40,6 +38,8 @@ func (s *MOrm) BeforeServe() (err error) {
 }
 
 func (s *MOrm) Serve() (err error) {
+	s.logger = NewMOrmLogger(s.config.LogFormatJson)
+
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
 		s.config.User, s.config.Pass, s.config.Host, s.config.Port, s.config.DBName, s.config.Charset)
 

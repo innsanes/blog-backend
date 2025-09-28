@@ -13,26 +13,16 @@ type VodkaLog struct {
 	logger *zap.Logger
 }
 
-func NewVodkaLog(name string) *VodkaLog {
-	zapLoggerEncoderConfig := zapcore.EncoderConfig{
-		TimeKey:          "time",
-		LevelKey:         "level",
-		NameKey:          "logger",
-		CallerKey:        "caller",
-		MessageKey:       "message",
-		StacktraceKey:    "stacktrace",
-		EncodeTime:       zapcore.RFC3339TimeEncoder,
-		EncodeLevel:      zapcore.CapitalColorLevelEncoder,
-		EncodeDuration:   zapcore.SecondsDurationEncoder,
-		LineEnding:       zapcore.DefaultLineEnding,
-		ConsoleSeparator: " ",
+func NewVodkaLog(name string, isJsonFormat bool) *VodkaLog {
+	var encoder zapcore.Encoder
+	if isJsonFormat {
+		encoderConfig := ZapEncoderConfigJson()
+		encoder = zapcore.NewJSONEncoder(encoderConfig)
+	} else {
+		encoderConfig := ZapEncoderConfigConsole()
+		encoder = zapcore.NewConsoleEncoder(encoderConfig)
 	}
-
-	zapCore := zapcore.NewCore(
-		zapcore.NewConsoleEncoder(zapLoggerEncoderConfig),
-		os.Stdout,
-		zapcore.DebugLevel,
-	)
+	zapCore := zapcore.NewCore(encoder, os.Stdout, zapcore.DebugLevel)
 	zapLogger := zap.New(zapCore)
 
 	return &VodkaLog{
