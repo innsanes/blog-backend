@@ -2,13 +2,14 @@ package core
 
 import (
 	"bytes"
-	"github.com/innsanes/conf"
-	"github.com/innsanes/serv"
 	"os"
 	"runtime"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/innsanes/conf"
+	"github.com/innsanes/serv"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -69,7 +70,7 @@ func ZapEncoderConfigConsole() zapcore.EncoderConfig {
 		CallerKey:        "caller",
 		MessageKey:       "message",
 		StacktraceKey:    "stacktrace",
-		EncodeTime:       zapcore.RFC3339TimeEncoder,
+		EncodeTime:       zapcore.ISO8601TimeEncoder,
 		EncodeLevel:      zapcore.CapitalColorLevelEncoder,
 		EncodeDuration:   zapcore.SecondsDurationEncoder,
 		LineEnding:       "",
@@ -80,15 +81,16 @@ func ZapEncoderConfigConsole() zapcore.EncoderConfig {
 
 func ZapEncoderConfigJson() zapcore.EncoderConfig {
 	return zapcore.EncoderConfig{
-		TimeKey:          "time",
+		TimeKey:          "ts",
 		LevelKey:         "level",
 		NameKey:          "logger",
 		CallerKey:        "caller",
-		MessageKey:       "message",
+		FunctionKey:      zapcore.OmitKey,
+		MessageKey:       "msg",
 		StacktraceKey:    "stacktrace",
-		EncodeTime:       zapcore.RFC3339TimeEncoder,
-		EncodeLevel:      zapcore.CapitalLevelEncoder,
-		EncodeDuration:   zapcore.MillisDurationEncoder,
+		EncodeTime:       zapcore.EpochTimeEncoder,
+		EncodeLevel:      zapcore.LowercaseLevelEncoder,
+		EncodeDuration:   zapcore.StringDurationEncoder,
 		LineEnding:       "",
 		ConsoleSeparator: "",
 	}
