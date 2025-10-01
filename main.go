@@ -20,6 +20,7 @@ func main() {
 	internalServer.RegisterRouter(router.RegisterPProf)
 
 	serv.Serve(
+		global.Log,
 		global.Config,
 		global.Image,
 		global.MySQL,
