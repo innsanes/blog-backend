@@ -252,7 +252,7 @@ func (s *BlogService) Search(in *req.BlogSearch) (out []*msearch.BlogSearch, err
 		b := &msearch.Blog{}
 		err = json.Unmarshal(formatted, b)
 		if err != nil {
-			g.Log.Error("[Blog.Search] search _formatted unmarshal error", zap.Any("error", err))
+			g.Log.Error("[Blog.Search] search _formatted unmarshal error", zap.Error(err))
 			continue
 		}
 		bs := &msearch.BlogSearch{
@@ -266,7 +266,7 @@ func (s *BlogService) Search(in *req.BlogSearch) (out []*msearch.BlogSearch, err
 		blogMatchesPosition := &msearch.BlogSearchMatchPositions{}
 		err = json.Unmarshal(matchesPosition, blogMatchesPosition)
 		if err != nil {
-			g.Log.Error("[Blog.Search] search _matchesPosition unmarshal error", zap.Any("error", err))
+			g.Log.Error("[Blog.Search] search _matchesPosition unmarshal error", zap.Error(err))
 			continue
 		}
 		// 计算所有字段的总匹配次数
