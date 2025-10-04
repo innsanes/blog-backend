@@ -4,8 +4,10 @@ import (
 	"blog-backend/services/service"
 	"blog-backend/structs/req"
 	"blog-backend/structs/tod"
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -58,6 +60,7 @@ func BlogGet(ctx *gin.Context) {
 	request := &req.BlogGet{
 		Id: uint(id),
 	}
+	ctx.Set("request", fmt.Sprintf("%s=%s", "id", idString))
 	blog, err := service.Blog.Get(request)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -92,6 +95,15 @@ func BlogList(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	kvs := []string{
+		fmt.Sprintf("%s=%s", "category", params.Category),
+		fmt.Sprintf("%s=%v", "userCursor", params.UseCursor),
+		fmt.Sprintf("%s=%d", "page", params.Page),
+		fmt.Sprintf("%s=%d", "size", params.Size),
+		fmt.Sprintf("%s=%d", "cursor", params.Cursor),
+		fmt.Sprintf("%s=%v", "forward", params.Forward),
+	}
+	ctx.Set("request", strings.Join(kvs, ","))
 	blogs, err := service.Blog.List(params)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -125,6 +137,7 @@ func BlogSearch(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	ctx.Set("request", fmt.Sprintf("%s=%s", "search", params.Search))
 	blogs, err := service.Blog.Search(params)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

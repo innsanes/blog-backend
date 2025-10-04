@@ -1,11 +1,12 @@
 package core
 
 import (
+	"os"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"os"
-	"time"
 )
 
 type VodkaLog struct {
@@ -63,10 +64,9 @@ func buildRequestFields(c *gin.Context) []zap.Field {
 		zap.String("path", c.Request.URL.Path),
 		zap.String("client_ip", c.ClientIP()),
 		zap.String("proto", c.Request.Proto),
-		//zap.String("user_agent", c.Request.UserAgent()),
-		//zap.String("referer", c.Request.Referer()),
+		zap.String("user_agent", c.Request.UserAgent()),
+		zap.String("referer", c.Request.Referer()),
 		//zap.Any("headers", c.Request.Header),
-		//zap.String("body", "request body logged"),
 	}
 	return fields
 }
@@ -77,6 +77,7 @@ func buildResponseFields(c *gin.Context, start time.Time) []zap.Field {
 		zap.Int("status", c.Writer.Status()),
 		zap.Int("body_size", c.Writer.Size()),
 		zap.Int64("latency", time.Since(start).Milliseconds()),
+		zap.String("request", c.GetString("request")),
 		//zap.String("response", "response body logged"),
 		//zap.String("errors", c.Errors.String()),
 	}
